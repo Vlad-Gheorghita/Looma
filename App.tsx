@@ -8,12 +8,6 @@ export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppNavigator isLoggedIn={isLoggedIn} />
-      {!isLoggedIn && (
-        <Button title="Log In" onPress={() => setIsLoggedIn(true)} />
-      )}
-      {isLoggedIn && (
-        <Button title="Log Out" onPress={() => setIsLoggedIn(false)} />
-      )}
     </SafeAreaView>
   );
 }
