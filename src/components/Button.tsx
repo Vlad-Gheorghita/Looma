@@ -1,9 +1,9 @@
 import React from "react";
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextStyle,
-  TouchableOpacity,
   ViewStyle,
 } from "react-native";
 import colors from "@colors";
@@ -15,15 +15,52 @@ type ButtonProps = {
     button?: ViewStyle | ViewStyle[];
     title?: TextStyle | TextStyle[];
   };
+  rippleConfig?: {
+    color?: string;
+    borderless?: boolean;
+    radius?: number;
+  };
+  disabled?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = ({ title, onPress, styling }) => {
+const Button: React.FC<ButtonProps> = ({
+  title,
+  onPress,
+  styling,
+  rippleConfig,
+  disabled = false,
+}) => {
   return (
-    <TouchableOpacity
-      style={[defaultStyles.buttonStyle, colors.primaryButton, styling?.button]}
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        defaultStyles.buttonStyle,
+        colors.primaryButton,
+        styling?.button,
+        disabled ? defaultStyles.disabledButton : undefined,
+        pressed && !disabled && { opacity: 0.9 },
+      ]}
+      android_ripple={
+        !disabled
+          ? {
+              color: rippleConfig?.color || "rgba(0, 0, 0, 0.2)",
+              borderless: rippleConfig?.borderless || false,
+              radius: rippleConfig?.radius,
+            }
+          : undefined
+      }
+      disabled={disabled}
     >
-      <Text style={[defaultStyles.titleStyle, styling?.title]}>{title}</Text>
-    </TouchableOpacity>
+      <Text
+        style={[
+          defaultStyles.titleStyle,
+          styling?.title,
+          disabled ? defaultStyles.disabledTitle : undefined,
+        ]}
+      >
+        {title}
+      </Text>
+    </Pressable>
   );
 };
 
@@ -33,10 +70,17 @@ const defaultStyles = StyleSheet.create({
     fontSize: 20,
     padding: 10,
   },
+  disabledTitle: {
+    color: "#888888",
+  },
   buttonStyle: {
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  disabledButton: {
+    backgroundColor: "#cccccc",
   },
 });
 
