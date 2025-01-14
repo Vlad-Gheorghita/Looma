@@ -74,7 +74,7 @@ const defaultStyles = StyleSheet.create({
     color: "#888888",
   },
   buttonStyle: {
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
