@@ -46,8 +46,6 @@ const StartScreen: React.FC = () => {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
-        autoCapitalize="none"
-        autoComplete="off"
       />
       <Button
         styling={{ button: styles.buttonStyle }}
