@@ -2,6 +2,8 @@ import Button from "@components/Button";
 import Input from "@components/Input";
 import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
+import { register } from "services/firebase/authService";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 type UserData = {
   username: string;
@@ -15,6 +17,16 @@ const StartScreen: React.FC = () => {
     username: "",
     password: "",
   });
+
+  const signUp = (email: string, password: string) => {
+    register(email, password)
+      .then((user) => {
+        console.log(`user with ${user.user.email} was created!`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -45,7 +57,9 @@ const StartScreen: React.FC = () => {
       <Button
         styling={{ button: styles.buttonStyle }}
         title="Sign Up"
-        onPress={() => setUser({ ...userData, password })}
+        onPress={() => {
+          signUp(username, password);
+        }}
       />
     </View>
   );
@@ -68,7 +82,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "80%",
-    height: '6%',
+    height: 50,
   },
   buttonStyle: {
     width: "50%",

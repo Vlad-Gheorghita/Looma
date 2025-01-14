@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "990211081673",
+    "project_id": "home-app-assistant",
+    "storage_bucket": "home-app-assistant.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990211081673:android:32c220554919e556801418",
+        "android_client_info": {
+          "package_name": "com.homeAssistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtLkxD1LMApFL5mni3yeao0vLNGuRdfaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-import { Button, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 import AppNavigator from "./src/navigation/AppNavigator";
 import React, { useState } from "react";
 
