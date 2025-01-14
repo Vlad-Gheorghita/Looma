@@ -18,6 +18,7 @@ const StartScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      {/* to be removed, only during implementation */}
       <Text>
         Username:{userData.username} Password:{userData.password}
       </Text>
