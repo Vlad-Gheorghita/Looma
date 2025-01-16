@@ -9,7 +9,7 @@ import {
 import colors from "@colors";
 
 type ButtonProps = {
-  title?: string;
+  title: string;
   onPress?: () => void;
   styling?: {
     button?: ViewStyle | ViewStyle[];
