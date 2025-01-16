@@ -1,3 +1,4 @@
+import { register } from "@authService";
 import colors from "@colors";
 import Button from "@components/Button";
 import Input from "@components/Input";
@@ -5,29 +6,25 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 type UserData = {
-  username: string
   email: string;
   password: string;
 };
 
 const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [userData, setUserData] = useState<UserData>({
-    username: '',
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
+
+  const signUp = (userData: UserData) => {
+    register(userData.email, userData.password)
+      .then((user) => console.log(`user with ${user.user.email} was created!`))
+      .catch((error) => console.log(error));
+  };
 
   return (
     <View style={styles.screenContainer}>
       <View style={styles.loginContainer}>
-      <Input
-          style={styles.input}
-          placeholder="Username"
-          value={userData.username}
-          onChangeText={(inputUsername) =>
-            setUserData({ ...userData, username: inputUsername })
-          }
-        />
         <Input
           style={styles.input}
           placeholder="Email"
@@ -46,7 +43,11 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           }
         />
       </View>
-      <Button styling={{ button: styles.buttonStyle }} title="Sign Up" />
+      <Button
+        styling={{ button: styles.buttonStyle }}
+        title="Sign Up"
+        onPress={() => signUp(userData)}
+      />
       <View style={{ marginTop: "3%" }}>
         <Text>
           Already have an account?{" "}
