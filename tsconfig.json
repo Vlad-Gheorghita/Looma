@@ -9,6 +9,7 @@
       "@utils/*": ["utils/*"],
       "@colors": ["styles/colors"],
       "@authService": ["services/firebase/authService"],
+      "@navigationService":["services/navigation/navigationService"],
       "@navigationTypes": ["types/navigationTypes"]
     }
   }

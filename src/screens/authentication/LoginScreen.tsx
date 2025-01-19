@@ -1,6 +1,7 @@
 import colors from "@colors";
 import Button from "@components/Button";
 import Input from "@components/Input";
+import { navigate } from "@navigationService";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -9,7 +10,7 @@ type UserData = {
   password: string;
 };
 
-const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
+const LoginScreen: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
     email: "",
     password: "",
@@ -43,10 +44,10 @@ const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
       <View style={{ marginTop: "3%" }}>
         <Text>
           Don't have an account?{" "}
-          <Text style={colors.primaryColor} onPress={() => navigation.navigate("Register")}>Sign Up</Text>
+          <Text style={colors.primaryColor} onPress={() => navigate('Auth',{screen: 'Register'})}>Sign Up</Text>
         </Text>
       </View>
-      <Button title="navigate to start" onPress={() => navigation.navigate("Start")}/>
+      <Button title="navigate to start" onPress={() => navigate('Auth',{screen: 'Start'})}/>
     </View>
   );
 };

@@ -1,43 +1,20 @@
 import Button from "@components/Button";
-import Input from "@components/Input";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { register } from "@authService";
-
-type UserData = {
-  username: string;
-  password: string;
-};
-
-const StartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [userData, setUser] = useState<UserData>({
-    username: "",
-    password: "",
-  });
-
-  const signUp = (email: string, password: string) => {
-    register(email, password)
-      .then((user) => {
-        console.log(`user with ${user.user.email} was created!`);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+import { navigate } from "@navigationService";
+const StartScreen: React.FC = () => {
 
   return (
     <View style={styles.screenContainer}>
       <Button
         styling={{ button: styles.buttonStyle }}
         title="Log In"
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigate("Auth",{screen: 'Login'})}
       />
       <Button
         styling={{ button: styles.buttonStyle }}
         title="Sign Up"
-        onPress={() => navigation.navigate("Register")}
+        onPress={() => navigate("Auth",{screen: 'Register'})}
       />
     </View>
   );

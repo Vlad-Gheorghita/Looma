@@ -1,4 +1,3 @@
-// src/types.ts
 import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type AuthStackParamList = {
