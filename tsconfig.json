@@ -8,7 +8,8 @@
       "@screens/*": ["screens/*"],
       "@utils/*": ["utils/*"],
       "@colors": ["styles/colors"],
-      "@authService": ["services/firebase/authService"]
+      "@authService": ["services/firebase/authService"],
+      "@navigationTypes": ["types/navigationTypes"]
     }
   }
 }
