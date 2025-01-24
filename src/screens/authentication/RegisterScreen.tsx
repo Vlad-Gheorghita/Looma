@@ -1,12 +1,97 @@
-import React from "react";
+import colors from "@colors";
+import Button from "@components/Button";
+import Input from "@components/Input";
+import { navigate } from "@navigationService";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useAuth } from "state/AuthContext";
 
-const RegisterScreen: React.FC = () => {
-    return (<View>
-        <Text>This is the Register Screen</Text>
-    </View>);
+type UserData = {
+  email: string;
+  password: string;
 };
 
-const styles = StyleSheet.create({});
+const RegisterScreen: React.FC = () => {
+  const { register } = useAuth();
+  const [userData, setUserData] = useState<UserData>({
+    email: "",
+    password: "",
+  });
+
+  const handleRegister = async (userData: UserData) => {
+    try {
+      await register(userData.email, userData.password);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
+
+  return (
+    <View style={styles.screenContainer}>
+      <View style={styles.loginContainer}>
+        <Input
+          style={styles.input}
+          placeholder="Email"
+          value={userData.email}
+          onChangeText={(inputEmail) =>
+            setUserData({ ...userData, email: inputEmail })
+          }
+        />
+        <Input
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={userData.password}
+          onChangeText={(inputPassword) =>
+            setUserData({ ...userData, password: inputPassword })
+          }
+        />
+      </View>
+      <Button
+        styling={{ button: styles.buttonStyle }}
+        title="Sign Up"
+        onPress={() => handleRegister(userData)}
+      />
+      <View style={{ marginTop: "3%" }}>
+        <Text>
+          Already have an account?{" "}
+          <Text
+            style={colors.primaryColor}
+            onPress={() => navigate("Auth", { screen: "Login" })}
+          >
+            Log In
+          </Text>
+        </Text>
+      </View>
+      <Button
+        title="navigate to start"
+        onPress={() => navigate("Auth", { screen: "Start" })}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+  },
+  loginContainer: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+  },
+  input: {
+    width: "80%",
+    height: 50,
+  },
+  buttonStyle: {
+    width: "80%",
+    margin: "1%",
+  },
+});
 
 export default RegisterScreen;

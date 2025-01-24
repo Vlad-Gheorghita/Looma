@@ -1,13 +1,19 @@
+import Button from "@components/Button";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useAuth } from "state/AuthContext";
 
 const HomeScreen: React.FC = () => {
-    return (
-        <View>
-            <Text>This is the HomeScreen</Text>
-        </View>
-    );
-}
+  const { authState, logout } = useAuth();
+  return (
+    <View>
+      <Text style={{ marginBottom: 10, marginTop: 10 }}>
+        User {authState.user?.email} is logged in
+      </Text>
+      <Button title="Log Out" onPress={logout} />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({});
 

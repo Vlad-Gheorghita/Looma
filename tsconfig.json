@@ -4,9 +4,14 @@
     "strict": true,
     "baseUrl": "src",
     "paths": {
-      "@components": ["components/*"],
-      "@screens": ["screens/*"],
-      "@utils": ["utils/*"]
+      "@components/*": ["components/*"],
+      "@screens/*": ["screens/*"],
+      "@utils/*": ["utils/*"],
+      "@colors": ["styles/colors"],
+      "@authService": ["services/firebase/authService"],
+      "@navigationService":["services/navigation/navigationService"],
+      "@navigationTypes": ["types/navigationTypes"],
+      "@types/*" :["types/*"]
     }
   }
 }

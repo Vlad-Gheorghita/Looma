@@ -1,20 +1,27 @@
-import { Button, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 import AppNavigator from "./src/navigation/AppNavigator";
-import React, { useState } from "react";
+import React from "react";
+import { AuthProvider, useAuth } from "state/AuthContext";
+import LoadingOverlay from "@components/LoadingOverlay";
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const AppContent = () => {
+  const { authState } = useAuth(); // Access the loading state from AuthContext
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <AppNavigator isLoggedIn={isLoggedIn} />
-      {!isLoggedIn && (
-        <Button title="Log In" onPress={() => setIsLoggedIn(true)} />
-      )}
-      {isLoggedIn && (
-        <Button title="Log Out" onPress={() => setIsLoggedIn(false)} />
-      )}
-    </SafeAreaView>
+    <>
+      <LoadingOverlay visible={authState.loading} /> {/* Show overlay when loading */}
+      <AppNavigator />
+    </>
+  );
+};
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <AppContent />
+      </SafeAreaView>
+    </AuthProvider>
   );
 }
 
