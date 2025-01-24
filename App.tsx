@@ -1,13 +1,25 @@
 import { SafeAreaView, StyleSheet } from "react-native";
 import AppNavigator from "./src/navigation/AppNavigator";
 import React from "react";
-import { AuthProvider } from "state/AuthContext";
+import { AuthProvider, useAuth } from "state/AuthContext";
+import LoadingOverlay from "@components/LoadingOverlay";
+
+const AppContent = () => {
+  const { authState } = useAuth(); // Access the loading state from AuthContext
+
+  return (
+    <>
+      <LoadingOverlay visible={authState.loading} /> {/* Show overlay when loading */}
+      <AppNavigator />
+    </>
+  );
+};
 
 export default function App() {
   return (
     <AuthProvider>
       <SafeAreaView style={{ flex: 1 }}>
-        <AppNavigator />
+        <AppContent />
       </SafeAreaView>
     </AuthProvider>
   );

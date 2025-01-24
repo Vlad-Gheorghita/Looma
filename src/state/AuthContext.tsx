@@ -51,12 +51,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
+    setLoadingState(true);
     try {
       const user = await authService.login(email, password);
       setAuthState({ user, loading: false });
     } catch (error: any) {
       console.error("Login Failed", error.message);
       throw error;
+    } finally {
+      setLoadingState(false);
     }
   };
 
@@ -64,24 +67,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string,
     password: string,
     displayName?: string
-  ) => {
+  ): Promise<void> => {
+    setLoadingState(true);
     try {
       const user = await authService.register(email, password, displayName);
       setAuthState({ user, loading: false });
     } catch (error: any) {
       console.error("Registration failed:", error.message);
       throw error;
+    } finally {
+      setLoadingState(false);
     }
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
+    setLoadingState(true);
     try {
       await authService.logout();
       setAuthState({ user: null, loading: false });
     } catch (error: any) {
       console.error("Logout failed:", error.message);
       throw error;
+    } finally {
+      setLoadingState(false);
     }
+  };
+
+  const setLoadingState = (isLoading: boolean): void => {
+    setAuthState({ ...authState, loading: isLoading });
   };
 
   return (
