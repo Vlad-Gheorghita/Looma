@@ -10,7 +10,8 @@
       "@colors": ["styles/colors"],
       "@authService": ["services/firebase/authService"],
       "@navigationService":["services/navigation/navigationService"],
-      "@navigationTypes": ["types/navigationTypes"]
+      "@navigationTypes": ["types/navigationTypes"],
+      "@types/*" :["types/*"]
     }
   }
 }

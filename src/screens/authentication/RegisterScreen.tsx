@@ -1,10 +1,10 @@
-import { register } from "@authService";
 import colors from "@colors";
 import Button from "@components/Button";
 import Input from "@components/Input";
 import { navigate } from "@navigationService";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useAuth } from "state/AuthContext";
 
 type UserData = {
   email: string;
@@ -12,15 +12,18 @@ type UserData = {
 };
 
 const RegisterScreen: React.FC = () => {
+  const { register } = useAuth();
   const [userData, setUserData] = useState<UserData>({
     email: "",
     password: "",
   });
 
-  const signUp = (userData: UserData) => {
-    register(userData.email, userData.password)
-      .then((user) => console.log(`user with ${user.user.email} was created!`))
-      .catch((error) => console.log(error));
+  const handleRegister = async (userData: UserData) => {
+    try {
+      await register(userData.email, userData.password);
+    } catch (err: any) {
+      console.log(err.message);
+    }
   };
 
   return (
@@ -47,7 +50,7 @@ const RegisterScreen: React.FC = () => {
       <Button
         styling={{ button: styles.buttonStyle }}
         title="Sign Up"
-        onPress={() => signUp(userData)}
+        onPress={() => handleRegister(userData)}
       />
       <View style={{ marginTop: "3%" }}>
         <Text>

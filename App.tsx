@@ -1,14 +1,15 @@
 import { SafeAreaView, StyleSheet } from "react-native";
 import AppNavigator from "./src/navigation/AppNavigator";
-import React, { useState } from "react";
+import React from "react";
+import { AuthProvider } from "state/AuthContext";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <AppNavigator isLoggedIn={isLoggedIn} />
-    </SafeAreaView>
+    <AuthProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <AppNavigator />
+      </SafeAreaView>
+    </AuthProvider>
   );
 }
 

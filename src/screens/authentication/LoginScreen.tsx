@@ -4,6 +4,7 @@ import Input from "@components/Input";
 import { navigate } from "@navigationService";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useAuth } from "state/AuthContext";
 
 type UserData = {
   email: string;
@@ -11,10 +12,19 @@ type UserData = {
 };
 
 const LoginScreen: React.FC = () => {
+  const { login } = useAuth();
   const [userData, setUserData] = useState<UserData>({
     email: "",
     password: "",
   });
+
+  const handleLogin = async (userData: UserData) => {
+    try {
+      await login(userData.email, userData.password);
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <View style={styles.screenContainer}>
@@ -40,14 +50,26 @@ const LoginScreen: React.FC = () => {
           <Text style={{ textAlign: "right" }}>Forgot your password?</Text>
         </View>
       </View>
-      <Button styling={{ button: styles.buttonStyle }} title="Log In" />
+      <Button
+        styling={{ button: styles.buttonStyle }}
+        title="Log In"
+        onPress={() => handleLogin(userData)}
+      />
       <View style={{ marginTop: "3%" }}>
         <Text>
           Don't have an account?{" "}
-          <Text style={colors.primaryColor} onPress={() => navigate('Auth',{screen: 'Register'})}>Sign Up</Text>
+          <Text
+            style={colors.primaryColor}
+            onPress={() => navigate("Auth", { screen: "Register" })}
+          >
+            Sign Up
+          </Text>
         </Text>
       </View>
-      <Button title="navigate to start" onPress={() => navigate('Auth',{screen: 'Start'})}/>
+      <Button
+        title="navigate to start"
+        onPress={() => navigate("Auth", { screen: "Start" })}
+      />
     </View>
   );
 };
