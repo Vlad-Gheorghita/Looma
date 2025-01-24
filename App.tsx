@@ -9,7 +9,7 @@ const AppContent = () => {
 
   return (
     <>
-      <LoadingOverlay visible={authState.loading} /> {/* Show overlay when loading */}
+      <LoadingOverlay visible={authState.loading} />
       <AppNavigator />
     </>
   );

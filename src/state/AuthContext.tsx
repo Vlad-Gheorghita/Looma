@@ -94,7 +94,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const setLoadingState = (isLoading: boolean): void => {
-    setAuthState({ ...authState, loading: isLoading });
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: isLoading,
+    }));
   };
 
   return (
