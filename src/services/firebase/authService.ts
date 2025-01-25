@@ -28,6 +28,7 @@ const register = async (
 
   if (displayName && result.user) {
     await result.user.updateProfile({ displayName });
+    await result.user.reload();
   }
 
   return result.user;

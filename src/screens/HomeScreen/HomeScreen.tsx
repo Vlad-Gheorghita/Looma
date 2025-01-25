@@ -8,7 +8,8 @@ const HomeScreen: React.FC = () => {
   return (
     <View>
       <Text style={{ marginBottom: 10, marginTop: 10 }}>
-        User {authState.user?.email} is logged in
+        User {authState.user?.email} with username:{" "}
+        {authState.user?.displayName} is logged in
       </Text>
       <Button title="Log Out" onPress={logout} />
     </View>
