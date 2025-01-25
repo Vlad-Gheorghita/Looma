@@ -2,7 +2,7 @@
   "expo": {
     "name": "Home-App-Assistant",
     "slug": "Home-App-Assistant",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/app-icon.png",
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./firebase/google-services.json",
@@ -29,6 +29,11 @@
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ff1ff33a-91ec-4d4d-bf32-cab93983300d"
+      }
+    }
   }
 }
