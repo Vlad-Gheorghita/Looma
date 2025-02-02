@@ -36,3 +36,6 @@ yarn-error.*
 # Ignore native directories 
 /android
 /ios
+
+# firebase json
+firebase/google-services.json

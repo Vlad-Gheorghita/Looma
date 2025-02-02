@@ -9,6 +9,7 @@ import { useAuth } from "state/AuthContext";
 type UserData = {
   email: string;
   password: string;
+  username: string;
 };
 
 const RegisterScreen: React.FC = () => {
@@ -16,11 +17,12 @@ const RegisterScreen: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
     email: "",
     password: "",
+    username: "",
   });
 
   const handleRegister = async (userData: UserData) => {
     try {
-      await register(userData.email, userData.password);
+      await register(userData.email, userData.password, userData.username);
     } catch (err: any) {
       console.log(err.message);
     }
@@ -35,6 +37,14 @@ const RegisterScreen: React.FC = () => {
           value={userData.email}
           onChangeText={(inputEmail) =>
             setUserData({ ...userData, email: inputEmail })
+          }
+        />
+        <Input
+          style={styles.input}
+          placeholder="Username"
+          value={userData.username}
+          onChangeText={(inputUsername) =>
+            setUserData({ ...userData, username: inputUsername })
           }
         />
         <Input

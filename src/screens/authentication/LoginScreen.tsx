@@ -18,9 +18,21 @@ const LoginScreen: React.FC = () => {
     password: "",
   });
 
-  const handleLogin = async (userData: UserData) => {
+  const handleLogin = async (userData: UserData): Promise<void> => {
     try {
-      await login(userData.email, userData.password);
+      await login({
+        loginType: "email_and_password",
+        email: userData.email,
+        password: userData.password,
+      });
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  const handleGoogleLogin = async (): Promise<void> => {
+    try {
+      await login({ loginType: "google" });
     } catch (error: any) {
       console.log(error.message);
     }
@@ -54,6 +66,11 @@ const LoginScreen: React.FC = () => {
         styling={{ button: styles.buttonStyle }}
         title="Log In"
         onPress={() => handleLogin(userData)}
+      />
+      <Button
+        styling={{ button: styles.buttonStyle }}
+        title="Google Log In"
+        onPress={handleGoogleLogin}
       />
       <View style={{ marginTop: "3%" }}>
         <Text>

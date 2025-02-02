@@ -1,10 +1,24 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, AuthState } from "../types/authTypes";
-import { authService } from "@authService";
+import { authService, googleAuthService } from "@authService";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+
+
+type GoogleSignInParams = {
+  loginType: "google";
+};
+
+type FirebaseSignInParams = {
+  loginType: "email_and_password";
+  email: string;
+  password: string;
+};
+
+type LoginParams = FirebaseSignInParams | GoogleSignInParams;
 
 type AuthContextType = {
   authState: AuthState;
-  login: (email: string, password: string) => Promise<void>;
+  login: (loginParams: LoginParams) => Promise<void>;
   register: (
     email: string,
     password: string,
@@ -31,8 +45,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     loading: true,
   });
 
-  // Listen for Firebase authentication state changes
   useEffect(() => {
+    googleAuthService.configureGoogleSignIn();
+
     const unsubscribe = authService.authChangeListener((firebaseUser) => {
       if (firebaseUser) {
         const user: User = {
@@ -50,10 +65,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => unsubscribe(); // Cleanup listener on unmount
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (loginParams: LoginParams): Promise<void> => {
     setLoadingState(true);
+    let signInMethod: Promise<FirebaseAuthTypes.User>;
+
+    switch (loginParams.loginType) {
+      case "email_and_password":
+        signInMethod = authService.login(
+          loginParams.email,
+          loginParams.password
+        );
+        break;
+      case "google":
+        signInMethod = googleAuthService.signInWithGoogle();
+        break;
+    }
+
     try {
-      const user = await authService.login(email, password);
+      const user = await signInMethod;
       setAuthState({ user, loading: false });
     } catch (error: any) {
       console.error("Login Failed", error.message);
@@ -101,7 +130,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ authState, login, logout, register }}>
+    <AuthContext.Provider
+      value={{ authState, login, logout, register }}
+    >
       {children}
     </AuthContext.Provider>
   );

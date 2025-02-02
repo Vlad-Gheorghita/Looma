@@ -22,7 +22,7 @@ const AppNavigator = () => {
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
-      ) : (
+      ) : ( 
         <Stack.Navigator>
           <Stack.Screen
             name="Auth"
