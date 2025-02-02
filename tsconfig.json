@@ -13,10 +13,11 @@
     "paths": {
       "@components/*": ["components/*"],
       "@constants/*": ["constants/*"],
-      "@screens/*": ["screens/*"],
+      "@screens": ["screens/index"],
       "@utils/*": ["utils/*"],
       "@colors": ["styles/colors"],
       "@authService": ["services/firebase/authService"],
+      "@toastService": ["services/toaster/toastService"],
       "@navigationService":["services/navigation/navigationService"],
       "@navigationTypes": ["types/navigationTypes"],
       "@types/*" :["types/*"]

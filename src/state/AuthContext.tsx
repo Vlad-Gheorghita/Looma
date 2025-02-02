@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, AuthState } from "../types/authTypes";
 import { authService, googleAuthService } from "@authService";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { ToastService as toastService } from "@toastService";
+import { handleAuthError } from "@utils/handleAuthError";
 
 
 type GoogleSignInParams = {
@@ -84,9 +86,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const user = await signInMethod;
       setAuthState({ user, loading: false });
+      toastService.success('Login Successfully', `Welcome ${user.displayName}`)
     } catch (error: any) {
-      console.error("Login Failed", error.message);
-      throw error;
+      handleAuthError(error.code)
     } finally {
       setLoadingState(false);
     }
@@ -101,9 +103,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const user = await authService.register(email, password, displayName);
       setAuthState({ user, loading: false });
+      toastService.success('Register Successfully');
     } catch (error: any) {
-      console.error("Registration failed:", error.message);
-      throw error;
+      handleAuthError(error.code);
     } finally {
       setLoadingState(false);
     }
@@ -114,9 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await authService.logout();
       setAuthState({ user: null, loading: false });
+      toastService.info('Logged Out')
     } catch (error: any) {
-      console.error("Logout failed:", error.message);
-      throw error;
+      handleAuthError(error.code);
     } finally {
       setLoadingState(false);
     }
