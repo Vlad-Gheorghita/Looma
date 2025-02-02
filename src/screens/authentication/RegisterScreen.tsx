@@ -1,6 +1,5 @@
 import colors from "@colors";
-import Button from "@components/Button";
-import Input from "@components/Input";
+import { Button, Input } from "@components";
 import { navigate } from "@navigationService";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";

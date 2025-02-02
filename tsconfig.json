@@ -11,7 +11,7 @@
     "skipLibCheck": true,
     "baseUrl": "src",
     "paths": {
-      "@components/*": ["components/*"],
+      "@components": ["components/index"],
       "@constants/*": ["constants/*"],
       "@screens": ["screens/index"],
       "@utils/*": ["utils/*"],

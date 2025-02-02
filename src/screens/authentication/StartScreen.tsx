@@ -1,7 +1,7 @@
-import Button from "@components/Button";
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { navigate } from "@navigationService";
+import { Button } from "@components";
 const StartScreen: React.FC = () => {
 
   return (
