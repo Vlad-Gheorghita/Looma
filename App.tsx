@@ -2,7 +2,7 @@ import { SafeAreaView, StyleSheet } from "react-native";
 import AppNavigator from "./src/navigation/AppNavigator";
 import React from "react";
 import { AuthProvider, useAuth } from "state/AuthContext";
-import LoadingOverlay from "@components/LoadingOverlay";
+import {LoadingOverlay} from "@components";
 import Toast from "react-native-toast-message";
 
 const AppContent = () => {
