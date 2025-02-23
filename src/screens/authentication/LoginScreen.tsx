@@ -1,6 +1,4 @@
-import colors from "@colors";
 import { Button, Input } from "@components";
-import { navigate } from "@navigationService";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "state/AuthContext";
@@ -70,21 +68,6 @@ const LoginScreen: React.FC = () => {
         styling={{ button: styles.buttonStyle }}
         title="Google Log In"
         onPress={handleGoogleLogin}
-      />
-      <View style={{ marginTop: "3%" }}>
-        <Text>
-          Don't have an account?{" "}
-          <Text
-            style={colors.primaryColor}
-            onPress={() => navigate("Auth", { screen: "Register" })}
-          >
-            Sign Up
-          </Text>
-        </Text>
-      </View>
-      <Button
-        title="navigate to start"
-        onPress={() => navigate("Auth", { screen: "Start" })}
       />
     </View>
   );

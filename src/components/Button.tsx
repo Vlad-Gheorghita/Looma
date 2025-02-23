@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TextStyle,
+  View,
   ViewStyle,
 } from "react-native";
 import colors from "@colors";
@@ -14,6 +15,7 @@ type ButtonProps = {
   styling?: {
     button?: ViewStyle | ViewStyle[];
     title?: TextStyle | TextStyle[];
+    icon?: ViewStyle | ViewStyle[];
   };
   rippleConfig?: {
     color?: string;
@@ -21,6 +23,8 @@ type ButtonProps = {
     radius?: number;
   };
   disabled?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -29,6 +33,8 @@ const Button: React.FC<ButtonProps> = ({
   styling,
   rippleConfig,
   disabled = false,
+  icon,
+  iconPosition = "left",
 }) => {
   return (
     <Pressable
@@ -51,6 +57,9 @@ const Button: React.FC<ButtonProps> = ({
       }
       disabled={disabled}
     >
+      {icon && iconPosition === "left" && (
+        <View style={[defaultStyles.iconStyle, styling?.icon]}>{icon}</View>
+      )}
       <Text
         style={[
           defaultStyles.titleStyle,
@@ -60,6 +69,9 @@ const Button: React.FC<ButtonProps> = ({
       >
         {title}
       </Text>
+      {icon && iconPosition === "right" && (
+        <View style={[defaultStyles.iconStyle, styling?.icon]}>{icon}</View>
+      )}
     </Pressable>
   );
 };
@@ -81,6 +93,9 @@ const defaultStyles = StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: "#cccccc",
+  },
+  iconStyle: {
+    marginHorizontal: 8,
   },
 });
 
