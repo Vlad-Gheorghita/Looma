@@ -22,6 +22,7 @@
       "@navigationTypes": ["types/navigationTypes"],
       "@types/*" : ["types/*"],
       "@images/*": ["../assets/images/*"],
+      "@icons/*": ["../assets/icons/*"],
       "@hooks": ["hooks/index"]
     }
   }

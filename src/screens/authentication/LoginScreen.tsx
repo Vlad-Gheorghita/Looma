@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "state/AuthContext";
 import GoogleIcon from "../../../assets/google-icons/google-icon.svg";
+import { usePopOutAnimation } from "@hooks";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 type UserData = {
   email: string;
@@ -15,6 +17,11 @@ const LoginScreen: React.FC = () => {
     email: "",
     password: "",
   });
+  const { scale, opacity } = usePopOutAnimation();
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
 
   const handleLogin = async (userData: UserData): Promise<void> => {
     try {
@@ -39,6 +46,10 @@ const LoginScreen: React.FC = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.loginContainer}>
+        <Animated.Image
+          source={require("@icons/login-icon.png")}
+          style={[styles.loginIconStyle, animatedStyle]}
+        />
         <Input
           style={styles.input}
           placeholder="Email"
@@ -66,10 +77,10 @@ const LoginScreen: React.FC = () => {
             onPress={() => handleLogin(userData)}
           />
           <Button
-          icon={<GoogleIcon />}
-          styling={{ button: [styles.buttonStyle, {width:'15%'}] }}
-          onPress={handleGoogleLogin}
-        />
+            icon={<GoogleIcon />}
+            styling={{ button: [styles.buttonStyle, { width: "15%" }] }}
+            onPress={handleGoogleLogin}
+          />
         </View>
       </View>
     </View>
@@ -94,10 +105,16 @@ const styles = StyleSheet.create({
   },
   buttonContainerStyle: {
     flexDirection: "row",
-    gap: 15
+    gap: 15,
   },
   buttonStyle: {
-    width: '40%'
+    width: "40%",
+  },
+  loginIconStyle: {
+    height: "20%",
+    marginBottom: "5%",
+    aspectRatio: 1,
+    resizeMode: "contain",
   },
 });
 

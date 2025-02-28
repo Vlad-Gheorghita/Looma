@@ -1,6 +1,8 @@
 import { Button, Input } from "@components";
+import { usePopOutAnimation } from "@hooks";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useAuth } from "state/AuthContext";
 
 type UserData = {
@@ -16,6 +18,11 @@ const RegisterScreen: React.FC = () => {
     password: "",
     username: "",
   });
+  const { scale, opacity } = usePopOutAnimation();
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
 
   const handleRegister = async (userData: UserData) => {
     try {
@@ -28,6 +35,10 @@ const RegisterScreen: React.FC = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.loginContainer}>
+        <Animated.Image
+          source={require("@icons/register-icon.png")}
+          style={[styles.registerIconStyle, animatedStyle]}
+        />
         <Input
           style={styles.input}
           placeholder="Email"
@@ -81,6 +92,12 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     width: "80%",
+  },
+  registerIconStyle: {
+    height: "20%",
+    marginBottom: "5%",
+    aspectRatio: 1,
+    resizeMode: "contain",
   },
 });
 
