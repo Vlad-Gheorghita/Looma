@@ -4,7 +4,10 @@ import React from "react";
 import { AuthProvider, useAuth } from "state/AuthContext";
 import {LoadingOverlay} from "@components";
 import Toast from "react-native-toast-message";
+import { enableScreens } from "react-native-screens";
 
+
+enableScreens();
 const AppContent = () => {
   const { authState } = useAuth(); // Access the loading state from AuthContext
 
