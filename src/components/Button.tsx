@@ -10,8 +10,9 @@ import {
 import colors from "@colors";
 
 type ButtonProps = {
-  title: string;
+  title?: string;
   onPress?: () => void;
+  primary?: boolean;
   styling?: {
     button?: ViewStyle | ViewStyle[];
     title?: TextStyle | TextStyle[];
@@ -30,6 +31,7 @@ type ButtonProps = {
 const Button: React.FC<ButtonProps> = ({
   title,
   onPress,
+  primary = true,
   styling,
   rippleConfig,
   disabled = false,
@@ -41,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       style={({ pressed }) => [
         defaultStyles.buttonStyle,
-        colors.primaryButton,
+        primary? colors.primaryButton: colors.secondaryButton,
         styling?.button,
         disabled ? defaultStyles.disabledButton : undefined,
         pressed && !disabled && { opacity: 0.9 },
@@ -60,15 +62,17 @@ const Button: React.FC<ButtonProps> = ({
       {icon && iconPosition === "left" && (
         <View style={[defaultStyles.iconStyle, styling?.icon]}>{icon}</View>
       )}
-      <Text
-        style={[
-          defaultStyles.titleStyle,
-          styling?.title,
-          disabled ? defaultStyles.disabledTitle : undefined,
-        ]}
-      >
-        {title}
-      </Text>
+      {title && (
+        <Text
+          style={[
+            defaultStyles.titleStyle,
+            styling?.title,
+            disabled ? defaultStyles.disabledTitle : undefined,
+          ]}
+        >
+          {title}
+        </Text>
+      )}
       {icon && iconPosition === "right" && (
         <View style={[defaultStyles.iconStyle, styling?.icon]}>{icon}</View>
       )}

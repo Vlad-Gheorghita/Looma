@@ -2,6 +2,7 @@ import { Button, Input } from "@components";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "state/AuthContext";
+import GoogleIcon from "../../../assets/google-icons/google-icon.svg";
 
 type UserData = {
   email: string;
@@ -55,20 +56,22 @@ const LoginScreen: React.FC = () => {
             setUserData({ ...userData, password: inputPassword })
           }
         />
-        <View style={{ width: "80%", marginBottom: "5%" }}>
-          <Text style={{ textAlign: "right" }}>Forgot your password?</Text>
+        <View style={{ alignSelf: "flex-end", marginRight: "10%" }}>
+          <Text>Forgot your password?</Text>
+        </View>
+        <View style={styles.buttonContainerStyle}>
+          <Button
+            styling={{ button: styles.buttonStyle }}
+            title="Log In"
+            onPress={() => handleLogin(userData)}
+          />
+          <Button
+          icon={<GoogleIcon />}
+          styling={{ button: [styles.buttonStyle, {width:'15%'}] }}
+          onPress={handleGoogleLogin}
+        />
         </View>
       </View>
-      <Button
-        styling={{ button: styles.buttonStyle }}
-        title="Log In"
-        onPress={() => handleLogin(userData)}
-      />
-      <Button
-        styling={{ button: styles.buttonStyle }}
-        title="Google Log In"
-        onPress={handleGoogleLogin}
-      />
     </View>
   );
 };
@@ -77,22 +80,25 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
     backgroundColor: "#f8f9fa",
   },
   loginContainer: {
-    width: "100%",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f8f9fa",
+    gap: 15,
   },
   input: {
     width: "80%",
     height: 50,
   },
+  buttonContainerStyle: {
+    flexDirection: "row",
+    gap: 15
+  },
   buttonStyle: {
-    width: "80%",
-    margin: "1%",
+    width: '40%'
   },
 });
 
