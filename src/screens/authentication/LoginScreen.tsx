@@ -1,34 +1,40 @@
 import { Button, Input } from "@components";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "state/AuthContext";
-import GoogleIcon from "../../../assets/google-icons/google-icon.svg";
+import GoogleIcon from "@icons/google-icon.svg";
 import { usePopOutAnimation } from "@hooks";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
-type UserData = {
-  email: string;
-  password: string;
-};
+const loginSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
 
 const LoginScreen: React.FC = () => {
   const { login } = useAuth();
-  const [userData, setUserData] = useState<UserData>({
-    email: "",
-    password: "",
-  });
   const { scale, opacity } = usePopOutAnimation();
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
   }));
 
-  const handleLogin = async (userData: UserData): Promise<void> => {
+  const handleLogin = async (values: {
+    email: string;
+    password: string;
+  }): Promise<void> => {
     try {
       await login({
         loginType: "email_and_password",
-        email: userData.email,
-        password: userData.password,
+        email: values.email,
+        password: values.password,
       });
     } catch (error: any) {
       console.log(error.message);
@@ -50,38 +56,70 @@ const LoginScreen: React.FC = () => {
           source={require("@icons/login-icon.png")}
           style={[styles.loginIconStyle, animatedStyle]}
         />
-        <Input
-          style={styles.input}
-          placeholder="Email"
-          value={userData.email}
-          onChangeText={(inputEmail) =>
-            setUserData({ ...userData, email: inputEmail })
-          }
-        />
-        <Input
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={userData.password}
-          onChangeText={(inputPassword) =>
-            setUserData({ ...userData, password: inputPassword })
-          }
-        />
-        <View style={{ alignSelf: "flex-end", marginRight: "10%" }}>
-          <Text>Forgot your password?</Text>
-        </View>
-        <View style={styles.buttonContainerStyle}>
-          <Button
-            styling={{ button: styles.buttonStyle }}
-            title="Log In"
-            onPress={() => handleLogin(userData)}
-          />
-          <Button
-            icon={<GoogleIcon />}
-            styling={{ button: [styles.buttonStyle, { width: "15%" }] }}
-            onPress={handleGoogleLogin}
-          />
-        </View>
+
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={loginSchema}
+          onSubmit={handleLogin}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <>
+              <Input
+                style={[
+                  styles.input,
+                  errors.email && touched.email && styles.inputErrorStyle,
+                ]}
+                placeholder="Email"
+                keyboardType="email-address"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+              />
+              {errors.email && touched.email && (
+                <Text style={styles.errorTextStyle}>{errors.email}</Text>
+              )}
+
+              <Input
+                style={[
+                  styles.input,
+                  errors.password && touched.password && styles.inputErrorStyle,
+                ]}
+                placeholder="Password"
+                secureTextEntry
+                value={values.password}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+              />
+              {errors.password && touched.password && (
+                <Text style={styles.errorTextStyle}>{errors.password}</Text>
+              )}
+
+              <View style={{ alignSelf: "flex-end", marginRight: "10%" }}>
+                <Text>Forgot your password?</Text>
+              </View>
+
+              <View style={styles.buttonContainerStyle}>
+                <Button
+                  styling={{ button: styles.buttonStyle }}
+                  title="Log In"
+                  onPress={handleSubmit}
+                />
+                <Button
+                  icon={<GoogleIcon />}
+                  styling={{ button: [styles.buttonStyle, { width: "15%" }] }}
+                  onPress={handleGoogleLogin}
+                />
+              </View>
+            </>
+          )}
+        </Formik>
       </View>
     </View>
   );
@@ -115,6 +153,16 @@ const styles = StyleSheet.create({
     marginBottom: "5%",
     aspectRatio: 1,
     resizeMode: "contain",
+  },
+  inputErrorStyle: {
+    borderColor: "red",
+  },
+  errorTextStyle: {
+    color: "red",
+    fontSize: 14,
+    marginTop: "-2.5%",
+    alignSelf: "flex-start",
+    marginLeft: "10%",
   },
 });
 
