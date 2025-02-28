@@ -1,12 +1,20 @@
 import React from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { navigate } from "@navigationService";
 import { Button } from "@components";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { usePopOutAnimation } from "@hooks";
+
 const StartScreen: React.FC = () => {
+  const { scale, opacity } = usePopOutAnimation();
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
 
   return (
     <View style={styles.screenContainer}>
-      <Image source={require("@images/looma-logo_no-bg.png")} style={styles.logoStyle}/>
+      <Animated.Image source={require("@images/looma-logo_no-bg.png")} style={[styles.logoStyle, animatedStyle]}/>
       <Button
         styling={{ button: styles.buttonStyle }}
         title="Log In"

@@ -21,7 +21,8 @@
       "@navigationService":["services/navigation/navigationService"],
       "@navigationTypes": ["types/navigationTypes"],
       "@types/*" : ["types/*"],
-      "@images/*": ["../assets/images/*"]
+      "@images/*": ["../assets/images/*"],
+      "@hooks": ["hooks/index"]
     }
   }
 }
