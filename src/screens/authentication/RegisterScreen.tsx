@@ -53,12 +53,12 @@ const RegisterScreen: React.FC = () => {
             setUserData({ ...userData, password: inputPassword })
           }
         />
+        <Button
+          styling={{ button: styles.buttonStyle }}
+          title="Sign Up"
+          onPress={() => handleRegister(userData)}
+        />
       </View>
-      <Button
-        styling={{ button: styles.buttonStyle }}
-        title="Sign Up"
-        onPress={() => handleRegister(userData)}
-      />
     </View>
   );
 };
@@ -67,14 +67,13 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
     backgroundColor: "#f8f9fa",
   },
   loginContainer: {
-    width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
+    gap: 15,
   },
   input: {
     width: "80%",
@@ -82,7 +81,6 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     width: "80%",
-    margin: "1%",
   },
 });
 
