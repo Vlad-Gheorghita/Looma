@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
   loginContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
     gap: 15,
   },
   input: {
