@@ -15,7 +15,6 @@ import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useAuth } from "state/AuthContext";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import GoogleIcon from "@icons/google-icon.svg";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -127,13 +126,6 @@ const LoginScreen: React.FC = () => {
                       title="Log In"
                       onPress={handleSubmit}
                     />
-                    {/* <Button
-                      icon={<GoogleIcon />}
-                      styling={{
-                        button: [styles.buttonStyle, { width: "15%" }],
-                      }}
-                      onPress={handleGoogleLogin}
-                    /> */}
                   </View>
                 </>
               )}
