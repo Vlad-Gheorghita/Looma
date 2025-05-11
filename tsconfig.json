@@ -23,7 +23,8 @@
       "@types/*" : ["types/*"],
       "@images/*": ["../assets/images/*"],
       "@icons/*": ["../assets/icons/*"],
-      "@hooks": ["hooks/index"]
+      "@hooks": ["hooks/index"],
+      "@styling": ["styles/index"]
     }
   }
 }

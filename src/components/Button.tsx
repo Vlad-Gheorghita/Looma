@@ -1,3 +1,4 @@
+import { globalColors } from "@styling";
 import React from "react";
 import {
   Pressable,
@@ -7,7 +8,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import colors from "@colors";
 
 type ButtonProps = {
   title?: string;
@@ -43,10 +43,10 @@ const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       style={({ pressed }) => [
         defaultStyles.buttonStyle,
-        primary? colors.primaryButton: colors.secondaryButton,
+        primary? globalColors.primaryButton: globalColors.secondaryButton,
         styling?.button,
         disabled ? defaultStyles.disabledButton : undefined,
-        pressed && !disabled && { opacity: 0.9 },
+        pressed && !disabled && { opacity: 0.9 }, 
       ]}
       android_ripple={
         !disabled
