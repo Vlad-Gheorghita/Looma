@@ -3,21 +3,21 @@ const IS_PREVIEW = process.env.APP_VARIANT === "preview";
 
 const getAppName = () => {
   if (IS_DEV) {
-    return "Home App Assistant (Dev)";
+    return "Looma (Dev)";
   }
 
   if (IS_PREVIEW) {
-    return "Home App Assistant (Preview)";
+    return "Looma (Preview)";
   }
 
-  return "Home App Assistant";
+  return "Looma";
 };
 
 export default {
   expo: {
     name: getAppName(),
     slug: "Home-App-Assistant",
-    version: "0.2.0",
+    version: "0.2.1",
     orientation: "portrait",
     icon: "./assets/images/app-icon.png",
     userInterfaceStyle: "light",
