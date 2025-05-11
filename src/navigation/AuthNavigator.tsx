@@ -1,9 +1,9 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
 import { AuthStackParamList } from "@navigationTypes";
 import { LoginScreen, RegisterScreen, StartScreen } from "@screens";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Stack = createStackNavigator<AuthStackParamList>();
+const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthNavigator = () => (
   <Stack.Navigator initialRouteName="Start">

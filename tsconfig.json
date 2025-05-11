@@ -20,7 +20,10 @@
       "@toastService": ["services/toaster/toastService"],
       "@navigationService":["services/navigation/navigationService"],
       "@navigationTypes": ["types/navigationTypes"],
-      "@types/*" :["types/*"]
+      "@types/*" : ["types/*"],
+      "@images/*": ["../assets/images/*"],
+      "@icons/*": ["../assets/icons/*"],
+      "@hooks": ["hooks/index"]
     }
   }
 }

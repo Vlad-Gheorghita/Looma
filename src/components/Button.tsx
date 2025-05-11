@@ -4,16 +4,19 @@ import {
   StyleSheet,
   Text,
   TextStyle,
+  View,
   ViewStyle,
 } from "react-native";
 import colors from "@colors";
 
 type ButtonProps = {
-  title: string;
+  title?: string;
   onPress?: () => void;
+  primary?: boolean;
   styling?: {
     button?: ViewStyle | ViewStyle[];
     title?: TextStyle | TextStyle[];
+    icon?: ViewStyle | ViewStyle[];
   };
   rippleConfig?: {
     color?: string;
@@ -21,21 +24,26 @@ type ButtonProps = {
     radius?: number;
   };
   disabled?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
 };
 
 const Button: React.FC<ButtonProps> = ({
   title,
   onPress,
+  primary = true,
   styling,
   rippleConfig,
   disabled = false,
+  icon,
+  iconPosition = "left",
 }) => {
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
         defaultStyles.buttonStyle,
-        colors.primaryButton,
+        primary? colors.primaryButton: colors.secondaryButton,
         styling?.button,
         disabled ? defaultStyles.disabledButton : undefined,
         pressed && !disabled && { opacity: 0.9 },
@@ -51,15 +59,23 @@ const Button: React.FC<ButtonProps> = ({
       }
       disabled={disabled}
     >
-      <Text
-        style={[
-          defaultStyles.titleStyle,
-          styling?.title,
-          disabled ? defaultStyles.disabledTitle : undefined,
-        ]}
-      >
-        {title}
-      </Text>
+      {icon && iconPosition === "left" && (
+        <View style={[defaultStyles.iconStyle, styling?.icon]}>{icon}</View>
+      )}
+      {title && (
+        <Text
+          style={[
+            defaultStyles.titleStyle,
+            styling?.title,
+            disabled ? defaultStyles.disabledTitle : undefined,
+          ]}
+        >
+          {title}
+        </Text>
+      )}
+      {icon && iconPosition === "right" && (
+        <View style={[defaultStyles.iconStyle, styling?.icon]}>{icon}</View>
+      )}
     </Pressable>
   );
 };
@@ -81,6 +97,9 @@ const defaultStyles = StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: "#cccccc",
+  },
+  iconStyle: {
+    marginHorizontal: 8,
   },
 });
 

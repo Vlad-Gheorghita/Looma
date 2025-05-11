@@ -14,7 +14,6 @@ const Input: React.FC<TextInputProps> = ({ style, ...props }) => {
 
 const defaultStyles = StyleSheet.create({
   textInputStyle: {
-    marginBottom: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: "#ccc",
