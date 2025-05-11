@@ -1,7 +1,16 @@
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Button, Input } from "@components";
 import { usePopOutAnimation } from "@hooks";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { useAuth } from "state/AuthContext";
 import { Formik } from "formik";
@@ -41,92 +50,110 @@ const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
-      <View style={styles.registerContainer}>
-        <Animated.Image
-          source={require("@icons/register-icon.png")}
-          style={[styles.registerIconStyle, animatedStyle]}
-        />
-
-        <Formik
-          initialValues={{ email: "", password: "", username: "" }}
-          validationSchema={registerSchema}
-          onSubmit={handleRegister}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.screenContainer}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
         >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <>
-              <Input
-                style={[
-                  styles.input,
-                  errors.email && touched.email && styles.inputErrorStyle,
-                ]}
-                placeholder="Email"
-                keyboardType="email-address"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-              />
-              {errors.email && touched.email && (
-                <Text style={styles.errorTextStyle}>{errors.email}</Text>
-              )}
+          <View style={styles.registerContainer}>
+            <Animated.Image
+              source={require("@icons/register-icon.png")}
+              style={[styles.registerIconStyle, animatedStyle]}
+            />
 
-              <Input
-                style={[
-                  styles.input,
-                  errors.username && touched.username && styles.inputErrorStyle,
-                ]}
-                placeholder="Username"
-                value={values.username}
-                onChangeText={handleChange("username")}
-                onBlur={handleBlur("username")}
-              />
-              {errors.username && touched.username && (
-                <Text style={styles.errorTextStyle}>{errors.username}</Text>
-              )}
+            <Formik
+              initialValues={{ email: "", password: "", username: "" }}
+              validationSchema={registerSchema}
+              onSubmit={handleRegister}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <>
+                  <Input
+                    style={[
+                      styles.input,
+                      errors.email && touched.email && styles.inputErrorStyle,
+                    ]}
+                    placeholder="Email"
+                    keyboardType="email-address"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                  />
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorTextStyle}>{errors.email}</Text>
+                  )}
 
-              <Input
-                style={[
-                  styles.input,
-                  errors.password && touched.password && styles.inputErrorStyle,
-                ]}
-                placeholder="Password"
-                secureTextEntry
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-              />
-              {errors.password && touched.password && (
-                <Text style={styles.errorTextStyle}>{errors.password}</Text>
-              )}
+                  <Input
+                    style={[
+                      styles.input,
+                      errors.username &&
+                        touched.username &&
+                        styles.inputErrorStyle,
+                    ]}
+                    placeholder="Username"
+                    value={values.username}
+                    onChangeText={handleChange("username")}
+                    onBlur={handleBlur("username")}
+                  />
+                  {errors.username && touched.username && (
+                    <Text style={styles.errorTextStyle}>{errors.username}</Text>
+                  )}
 
-              <Button
-                styling={{ button: styles.buttonStyle }}
-                title="Sign Up"
-                onPress={handleSubmit}
-              />
-            </>
-          )}
-        </Formik>
-      </View>
-    </View>
+                  <Input
+                    style={[
+                      styles.input,
+                      errors.password &&
+                        touched.password &&
+                        styles.inputErrorStyle,
+                    ]}
+                    placeholder="Password"
+                    secureTextEntry
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                  />
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorTextStyle}>{errors.password}</Text>
+                  )}
+
+                  <Button
+                    styling={{ button: styles.buttonStyle }}
+                    title="Sign Up"
+                    onPress={handleSubmit}
+                  />
+                </>
+              )}
+            </Formik>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "stretch",
     backgroundColor: "#f8f9fa",
   },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   registerContainer: {
+    alignSelf: "stretch",
     justifyContent: "center",
     alignItems: "center",
     gap: 15,
@@ -150,7 +177,7 @@ const styles = StyleSheet.create({
   errorTextStyle: {
     color: "red",
     fontSize: 14,
-    marginTop: "-2.5%",
+    marginTop: -5,
     alignSelf: "flex-start",
     marginLeft: "10%",
   },

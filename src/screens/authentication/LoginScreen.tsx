@@ -1,12 +1,21 @@
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Button, Input } from "@components";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { useAuth } from "state/AuthContext";
-import GoogleIcon from "@icons/google-icon.svg";
 import { usePopOutAnimation } from "@hooks";
+import React from "react";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { useAuth } from "state/AuthContext";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import GoogleIcon from "@icons/google-icon.svg";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -26,10 +35,7 @@ const LoginScreen: React.FC = () => {
     opacity: opacity.value,
   }));
 
-  const handleLogin = async (values: {
-    email: string;
-    password: string;
-  }): Promise<void> => {
+  const handleLogin = async (values: { email: string; password: string }) => {
     try {
       await login({
         loginType: "email_and_password",
@@ -50,89 +56,107 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
-      <View style={styles.loginContainer}>
-        <Animated.Image
-          source={require("@icons/login-icon.png")}
-          style={[styles.loginIconStyle, animatedStyle]}
-        />
-
-        <Formik
-          initialValues={{ email: "", password: "" }}
-          validationSchema={loginSchema}
-          onSubmit={handleLogin}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.screenContainer}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
         >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <>
-              <Input
-                style={[
-                  styles.input,
-                  errors.email && touched.email && styles.inputErrorStyle,
-                ]}
-                placeholder="Email"
-                keyboardType="email-address"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-              />
-              {errors.email && touched.email && (
-                <Text style={styles.errorTextStyle}>{errors.email}</Text>
+          <View style={styles.loginContainer}>
+            <Animated.Image
+              source={require("@icons/login-icon.png")}
+              style={[styles.loginIconStyle, animatedStyle]}
+            />
+
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validationSchema={loginSchema}
+              onSubmit={handleLogin}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <>
+                  <Input
+                    style={[
+                      styles.input,
+                      errors.email && touched.email && styles.inputErrorStyle,
+                    ]}
+                    placeholder="Email"
+                    keyboardType="email-address"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                  />
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorTextStyle}>{errors.email}</Text>
+                  )}
+
+                  <Input
+                    style={[
+                      styles.input,
+                      errors.password &&
+                        touched.password &&
+                        styles.inputErrorStyle,
+                    ]}
+                    placeholder="Password"
+                    secureTextEntry
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                  />
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorTextStyle}>{errors.password}</Text>
+                  )}
+
+                  <View style={{ alignSelf: "flex-end", marginRight: "10%" }}>
+                    <Text>Forgot your password?</Text>
+                  </View>
+
+                  <View style={styles.buttonContainerStyle}>
+                    <Button
+                      styling={{ button: styles.buttonStyle }}
+                      title="Log In"
+                      onPress={handleSubmit}
+                    />
+                    {/* <Button
+                      icon={<GoogleIcon />}
+                      styling={{
+                        button: [styles.buttonStyle, { width: "15%" }],
+                      }}
+                      onPress={handleGoogleLogin}
+                    /> */}
+                  </View>
+                </>
               )}
-
-              <Input
-                style={[
-                  styles.input,
-                  errors.password && touched.password && styles.inputErrorStyle,
-                ]}
-                placeholder="Password"
-                secureTextEntry
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-              />
-              {errors.password && touched.password && (
-                <Text style={styles.errorTextStyle}>{errors.password}</Text>
-              )}
-
-              <View style={{ alignSelf: "flex-end", marginRight: "10%" }}>
-                <Text>Forgot your password?</Text>
-              </View>
-
-              <View style={styles.buttonContainerStyle}>
-                <Button
-                  styling={{ button: styles.buttonStyle }}
-                  title="Log In"
-                  onPress={handleSubmit}
-                />
-                <Button
-                  icon={<GoogleIcon />}
-                  styling={{ button: [styles.buttonStyle, { width: "15%" }] }}
-                  onPress={handleGoogleLogin}
-                />
-              </View>
-            </>
-          )}
-        </Formik>
-      </View>
-    </View>
+            </Formik>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "stretch",
     backgroundColor: "#f8f9fa",
   },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   loginContainer: {
+    alignSelf: "stretch",
     justifyContent: "center",
     alignItems: "center",
     gap: 15,
@@ -146,7 +170,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   buttonStyle: {
-    width: "40%",
+    width: "80%",
   },
   loginIconStyle: {
     height: "20%",
@@ -160,7 +184,7 @@ const styles = StyleSheet.create({
   errorTextStyle: {
     color: "red",
     fontSize: 14,
-    marginTop: "-2.5%",
+    marginTop: -5,
     alignSelf: "flex-start",
     marginLeft: "10%",
   },
