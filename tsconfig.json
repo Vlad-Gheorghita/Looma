@@ -1,6 +1,29 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "target": "esnext",
+    "module": "esnext",
+    "jsx": "react-native",
+    "strict": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "baseUrl": "src",
+    "paths": {
+      "@components": ["components/index"],
+      "@constants/*": ["constants/*"],
+      "@screens": ["screens/index"],
+      "@utils/*": ["utils/*"],
+      "@colors": ["styles/colors"],
+      "@authService": ["services/firebase/authService"],
+      "@toastService": ["services/toaster/toastService"],
+      "@navigationService":["services/navigation/navigationService"],
+      "@navigationTypes": ["types/navigationTypes"],
+      "@types/*" : ["types/*"],
+      "@images/*": ["../assets/images/*"],
+      "@icons/*": ["../assets/icons/*"],
+      "@hooks": ["hooks/index"]
+    }
   }
 }
