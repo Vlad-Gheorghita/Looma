@@ -7,7 +7,8 @@ export type AuthStackParamList = {
 };
 
 export type TabStackParamList = {
-  Home: undefined;
+  BillSplit: undefined;
+  Settings: undefined;
 };
 
 export type AppStackParamList = {
