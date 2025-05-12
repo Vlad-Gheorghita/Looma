@@ -34,14 +34,14 @@ const showToast = (
 };
 
 export const ToastService = {
-  success: (text1: string, text2?: string) =>
-    showToast('success', text1, text2),
-  error: (text1: string, text2?: string) => showToast('error', text1, text2),
-  info: (text1: string, text2?: string) => showToast('info', text1, text2),
+  success: (titleText: string, contentText?: string) =>
+    showToast('success', titleText, contentText),
+  error: (titleText: string, contentText?: string) => showToast('error', titleText, contentText),
+  info: (titleText: string, contentText?: string) => showToast('info', titleText, contentText),
   other: (
     type: 'success' | 'error' | 'info',
-    text1: string,
-    text2?: string,
+    titleText: string,
+    contentText?: string,
     options?: ToastOptionalParams
-  ) => showToast(type, text1, text2, options),
+  ) => showToast(type, titleText, contentText, options),
 };
