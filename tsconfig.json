@@ -18,6 +18,7 @@
       "@colors": ["styles/colors"],
       "@authService": ["services/firebase/authService"],
       "@toastService": ["services/toaster/toastService"],
+      "@ocrService":["services/OCR/ocrService"],
       "@navigationService":["services/navigation/navigationService"],
       "@navigationTypes": ["types/navigationTypes"],
       "@types/*" : ["types/*"],
