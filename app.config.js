@@ -46,6 +46,7 @@ export default {
       eas: {
         projectId: "ff1ff33a-91ec-4d4d-bf32-cab93983300d",
       },
+      gemini_api_key: process.env.GEMINI_API_KEY
     },
   },
 };
