@@ -7,6 +7,7 @@ import { useAnimatedStyle } from "react-native-reanimated";
 import { usePulseAnimation } from "@hooks";
 import { ToastService } from "@toastService";
 import { LinearGradient } from "expo-linear-gradient";
+import EditIcon from "@icons/edit-icon.svg";
 
 const BillSplitScreen: React.FC = () => {
   const { scale } = usePulseAnimation();
@@ -105,7 +106,10 @@ const BillSplitScreen: React.FC = () => {
           renderItem={({ item }) => (
             <Card style={styles.cardStyle}>
               <View style={styles.cardItemDetailsStyle}>
-                <Text style={{ fontWeight: "bold" }}>{item.itemName}</Text>
+                <View style={[styles.cartItemNameContainer]}>
+                  <Text style={{ fontWeight: "bold" }}>{item.itemName}</Text>
+                  <EditIcon width={"15%"} height={"100%"} />
+                </View>
                 <Text style={{ fontWeight: "bold" }}>
                   {item.price} {item.currency}
                 </Text>
@@ -181,7 +185,13 @@ const styles = StyleSheet.create({
   cardItemDetailsStyle: {
     flexDirection: "row",
     justifyContent: "space-between",
-    // alignItems: "flex-start"
+  },
+
+  cartItemNameContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: "5%",
   },
 
   cardAssignedPersonsStyle: {
