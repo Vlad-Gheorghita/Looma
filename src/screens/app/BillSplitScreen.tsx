@@ -16,14 +16,18 @@ import { ToastService } from "@toastService";
 import { LinearGradient } from "expo-linear-gradient";
 import EditIcon from "@icons/edit-icon.svg";
 import CloseIcon from "@icons/close-square-icon.svg";
+import AddPersonIcon from "@icons/add-person-icon.svg";
 import { BillItem } from "../../types/billItemTypes";
 
+type CardType = "ADD_PERSON" | "EDIT_ITEM";
+
 const BillSplitScreen: React.FC = () => {
-  const [popupVisible, setPopupVisible] = useState(false);
+  const [editCardPopupVisible, setEditCardPopupVisible] = useState(false);
+  const [addPersonPopupVisible, setAddPersonPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<BillItem | undefined>(
     undefined
   );
-  const [gradientColor, setGradientColor] = useState("#eeeeee")
+  const [gradientColor, setGradientColor] = useState("#eeeeee");
 
   const { scale } = usePulseAnimation();
   const animatedStyle = useAnimatedStyle(() => {
@@ -97,22 +101,44 @@ const BillSplitScreen: React.FC = () => {
     },
   ];
 
-
-  const openCardPopup = (item: BillItem): void => {
-    setSelectedItem(item);
-    setPopupVisible(true);
-    setGradientColor("#bbbbbb");
+  const openCardPopup = (item: BillItem, type: CardType): void => {
+    switch (type) {
+      case "EDIT_ITEM":
+        setSelectedItem(item);
+        setEditCardPopupVisible(true);
+        setGradientColor("#bbbbbb");
+        break;
+      case "ADD_PERSON":
+        setAddPersonPopupVisible(true);
+        setGradientColor("#bbbbbb");
+        break;
+    }
   };
 
-  const closeCardPopup = (): void => {
-    setPopupVisible(false);
-    setGradientColor("#eeeeee");
+  const closeCardPopup = (type: CardType): void => {
+    switch (type) {
+      case "EDIT_ITEM":
+        setEditCardPopupVisible(false);
+        setGradientColor("#eeeeee");
+        break;
+      case "ADD_PERSON":
+        setAddPersonPopupVisible(false);
+        setGradientColor("#eeeeee");
+        break;
+    }
   };
 
   return (
     <View style={[globalStyling.pageStyle]}>
       {/* <Button title="Upload Photo" onPress={handleScanBill} /> */}
       <View style={styles.reciptImageContainer}>
+        <View style={styles.addPersonContainer}>
+          <Pressable
+            onPress={() => openCardPopup({} as BillItem, "ADD_PERSON")}
+          >
+            <AddPersonIcon width={30} height={30} style={{ marginLeft: 10 }} />
+          </Pressable>
+        </View>
         <AnimatedCard style={styles.imageCard} animatedStyle={animatedStyle}>
           <Image
             source={require("@images/recipt_image_alt.png")}
@@ -132,7 +158,7 @@ const BillSplitScreen: React.FC = () => {
             renderItem={({ item }) => (
               <Card style={styles.cardStyle}>
                 <View style={styles.cardItemDetailsStyle}>
-                  <Pressable onPress={() => openCardPopup(item)}>
+                  <Pressable onPress={() => openCardPopup(item, "EDIT_ITEM")}>
                     <View style={[styles.cartItemNameContainer]}>
                       <Text style={{ fontWeight: "bold" }}>{item.name}</Text>
                       <EditIcon width={"15%"} height={"100%"} />
@@ -153,10 +179,10 @@ const BillSplitScreen: React.FC = () => {
           />
           {/* Top gradient shadow */}
           <LinearGradient
-          colors={[gradientColor, gradientColor + "00"]}
-          style={styles.topShadow}
-          pointerEvents="none"
-        />
+            colors={[gradientColor, gradientColor + "00"]}
+            style={styles.topShadow}
+            pointerEvents="none"
+          />
 
           {/* Bottom gradient shadow */}
           <LinearGradient
@@ -174,7 +200,10 @@ const BillSplitScreen: React.FC = () => {
         </Card>
       </View>
 
-      <AnimatedPopupCard visible={popupVisible} onClose={closeCardPopup}>
+      <AnimatedPopupCard
+        visible={editCardPopupVisible}
+        onClose={() => closeCardPopup("EDIT_ITEM")}
+      >
         <View style={styles.cardPopupContainer}>
           <View style={styles.cardPopupHeader}>
             <Text style={{ fontWeight: "bold" }}>{selectedItem?.name}</Text>
@@ -182,7 +211,7 @@ const BillSplitScreen: React.FC = () => {
               <Text style={{ fontWeight: "bold" }}>
                 {selectedItem?.price} {selectedItem?.currency}
               </Text>
-              <Pressable onPress={closeCardPopup}>
+              <Pressable onPress={() => closeCardPopup("EDIT_ITEM")}>
                 <CloseIcon width={30} height={30} />
               </Pressable>
             </View>
@@ -193,6 +222,17 @@ const BillSplitScreen: React.FC = () => {
             <Avatar initials="Da" />
             <Avatar initials="Dr" />
           </View>
+        </View>
+      </AnimatedPopupCard>
+
+      <AnimatedPopupCard
+        visible={addPersonPopupVisible}
+        onClose={() => closeCardPopup("ADD_PERSON")}
+      >
+        <View style={styles.addPersonPopupContainer}>
+          <Text style={{ fontWeight: "bold" }}>
+            Aici va veni adaugarea personaleor
+          </Text>
         </View>
       </AnimatedPopupCard>
     </View>
@@ -210,6 +250,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  addPersonContainer: {
+    justifyContent: "flex-start",
+    alignSelf: "stretch",
   },
 
   imageCard: {
@@ -234,7 +279,7 @@ const styles = StyleSheet.create({
   },
 
   reciptItemsList: {
-    flex: 20
+    flex: 20,
   },
 
   cardStyle: {
@@ -294,6 +339,11 @@ const styles = StyleSheet.create({
   },
 
   cardPopupPersonsContainer: { gap: 20 },
+
+  addPersonPopupContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   topShadow: {
     position: "absolute",
