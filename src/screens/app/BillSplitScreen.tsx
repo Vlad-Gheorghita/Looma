@@ -1,7 +1,14 @@
 import { globalStyling } from "@styling";
 import React, { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
-import { AnimatedCard, Avatar, Card } from "@components";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { AnimatedCard, AnimatedPopupCard, Avatar, Card } from "@components";
 import { pickImage, readRecipt } from "@billSpltterService";
 import { useAnimatedStyle } from "react-native-reanimated";
 import { usePulseAnimation } from "@hooks";
@@ -10,6 +17,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import EditIcon from "@icons/edit-icon.svg";
 
 const BillSplitScreen: React.FC = () => {
+  const [popupVisible, setPopupVisible] = useState(false);
+
   const { scale } = usePulseAnimation();
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -106,10 +115,12 @@ const BillSplitScreen: React.FC = () => {
           renderItem={({ item }) => (
             <Card style={styles.cardStyle}>
               <View style={styles.cardItemDetailsStyle}>
-                <View style={[styles.cartItemNameContainer]}>
-                  <Text style={{ fontWeight: "bold" }}>{item.itemName}</Text>
-                  <EditIcon width={"15%"} height={"100%"} />
-                </View>
+                <Pressable onPress={() => setPopupVisible(true)}>
+                  <View style={[styles.cartItemNameContainer]}>
+                    <Text style={{ fontWeight: "bold" }}>{item.itemName}</Text>
+                    <EditIcon width={"15%"} height={"100%"} />
+                  </View>
+                </Pressable>
                 <Text style={{ fontWeight: "bold" }}>
                   {item.price} {item.currency}
                 </Text>
@@ -138,6 +149,16 @@ const BillSplitScreen: React.FC = () => {
           pointerEvents="none"
         />
       </View>
+
+      <AnimatedPopupCard
+        visible={popupVisible}
+        onClose={() => setPopupVisible(false)}
+      >
+        <Text>Hopaaaa</Text>
+        <Pressable onPress={() => setPopupVisible(false)}>
+          <Text style={{ fontWeight: "bold" }}>Inchiiideee baaa</Text>
+        </Pressable>
+      </AnimatedPopupCard>
     </View>
   );
 };
