@@ -1,11 +1,12 @@
 import { globalStyling } from "@styling";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { AnimatedCard, Button, Card } from "@components";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { AnimatedCard, Avatar, Card } from "@components";
 import { pickImage, readRecipt } from "@billSpltterService";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { useAnimatedStyle } from "react-native-reanimated";
 import { usePulseAnimation } from "@hooks";
 import { ToastService } from "@toastService";
+import { LinearGradient } from "expo-linear-gradient";
 
 const BillSplitScreen: React.FC = () => {
   const { scale } = usePulseAnimation();
@@ -29,13 +30,66 @@ const BillSplitScreen: React.FC = () => {
     }
   };
 
+  const cardData = [
+    {
+      id: "1",
+      itemName: "Banane",
+      price: "5.67",
+      currency: "LEI",
+    },
+    {
+      id: "2",
+      itemName: "Carne",
+      price: "27.30",
+      currency: "LEI",
+    },
+    {
+      id: "3",
+      itemName: "Paine",
+      price: "5.32",
+      currency: "LEI",
+    },
+    {
+      id: "4",
+      itemName: "Lapte",
+      price: "9.99",
+      currency: "LEI",
+    },
+    {
+      id: "5",
+      itemName: "Lapte",
+      price: "9.99",
+      currency: "LEI",
+    },
+    {
+      id: "6",
+      itemName: "Lapte",
+      price: "9.99",
+      currency: "LEI",
+    },
+    {
+      id: "7",
+      itemName: "Lapte",
+      price: "9.99",
+      currency: "LEI",
+    },
+    {
+      id: "8",
+      itemName: "Lapte",
+      price: "9.99",
+      currency: "LEI",
+    },
+  ];
+
+  const bgColor = "#dddddd";
+
   return (
     <View style={[globalStyling.pageStyle]}>
       {/* <Button title="Upload Photo" onPress={handleScanBill} /> */}
       <View style={styles.reciptImageContainer}>
         <AnimatedCard style={styles.imageCard} animatedStyle={animatedStyle}>
           <Image
-            source={require("@images/recipt_image_alt.png")} // make sure this is a valid path
+            source={require("@images/recipt_image_alt.png")}
             style={styles.reciptAltStyle}
             resizeMode="contain"
           />
@@ -43,9 +97,42 @@ const BillSplitScreen: React.FC = () => {
       </View>
 
       <View style={styles.reciptItemsListContainer}>
-        <Card style={styles.cardStyle}>
-          <Text>Salutaaare acesta este un card</Text>
-        </Card>
+        <FlatList
+          contentContainerStyle={{ gap: 10, paddingBottom: 10 }}
+          showsVerticalScrollIndicator={false}
+          data={cardData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Card style={styles.cardStyle}>
+              <View style={styles.cardItemDetailsStyle}>
+                <Text style={{ fontWeight: "bold" }}>{item.itemName}</Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  {item.price} {item.currency}
+                </Text>
+              </View>
+              <View style={styles.cardAssignedPersonsStyle}>
+                <Avatar initials="Vl" />
+                <Avatar initials="La" />
+                <Avatar initials="Da" />
+                <Avatar initials="Dr" />
+              </View>
+            </Card>
+          )}
+        />
+
+        {/* Top gradient shadow */}
+        {/* <LinearGradient
+          colors={[bgColor, bgColor + "00"]}
+          style={styles.topShadow}
+          pointerEvents="none"
+        /> */}
+
+        {/* Bottom gradient shadow */}
+        <LinearGradient
+          colors={[bgColor + "00", bgColor]}
+          style={styles.bottomShadow}
+          pointerEvents="none"
+        />
       </View>
     </View>
   );
@@ -86,6 +173,40 @@ const styles = StyleSheet.create({
   },
 
   cardStyle: {
+    justifyContent: "flex-start",
+    alignItems: "stretch",
+    gap: 20,
+  },
+
+  cardItemDetailsStyle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // alignItems: "flex-start"
+  },
+
+  cardAssignedPersonsStyle: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 20,
+    flexWrap: "wrap",
+  },
+
+  topShadow: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+    zIndex: 10,
+  },
+
+  bottomShadow: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+    zIndex: 10,
   },
 });
 
