@@ -17,7 +17,7 @@ export default {
   expo: {
     name: getAppName(),
     slug: "Home-App-Assistant",
-    version: "0.2.1",
+    version: "0.3.1",
     orientation: "portrait",
     icon: "./assets/images/app-icon.png",
     userInterfaceStyle: "light",
