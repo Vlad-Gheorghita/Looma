@@ -20,7 +20,6 @@ import { pickImage, readRecipt } from "@billSpltterService";
 import { useAnimatedStyle } from "react-native-reanimated";
 import { usePulseAnimation } from "@hooks";
 import { ToastService } from "@toastService";
-import { LinearGradient } from "expo-linear-gradient";
 import EditIcon from "@icons/edit-icon.svg";
 import CloseIcon from "@icons/close-square-icon.svg";
 import AddPersonIcon from "@icons/add-person-icon.svg";
@@ -37,7 +36,6 @@ const BillSplitScreen: React.FC = () => {
   );
   const [persons, setPersons] = useState<Person[]>([]);
   const [newPersonName, setNewPersonName] = useState("");
-  const [gradientColor, setGradientColor] = useState("#eeeeee");
   const [billItems, setBillItems] = useState<BillItem[]>([]);
 
   const { scale } = usePulseAnimation();
@@ -79,7 +77,6 @@ const BillSplitScreen: React.FC = () => {
     // Show add person popup only if no persons are saved
     if (persons.length === 0) {
       setAddPersonPopupVisible(true);
-      setGradientColor("#bbbbbb");
     } else {
       // If persons exist, show scan receipt functionality
       handleScanBill();
@@ -103,7 +100,6 @@ const BillSplitScreen: React.FC = () => {
 
   const closeAddPersonPopup = () => {
     setAddPersonPopupVisible(false);
-    setGradientColor("#eeeeee");
     setNewPersonName("");
   };
 
@@ -161,12 +157,10 @@ const BillSplitScreen: React.FC = () => {
   const openCardPopup = (item: BillItem): void => {
     setSelectedItem(item);
     setEditCardPopupVisible(true);
-    setGradientColor("#bbbbbb");
   };
 
   const closeCardPopup = (): void => {
     setEditCardPopupVisible(false);
-    setGradientColor("#eeeeee");
   };
 
   return (
@@ -196,7 +190,7 @@ const BillSplitScreen: React.FC = () => {
           <>
             <View style={styles.reciptItemsList}>
               <FlatList
-                contentContainerStyle={{ gap: 10, paddingBottom: 10 }}
+                contentContainerStyle={{ gap: 10, paddingBottom: 8 }}
                 showsVerticalScrollIndicator={false}
                 data={cardData}
                 keyExtractor={(item) => item.id.toString()}
@@ -223,19 +217,6 @@ const BillSplitScreen: React.FC = () => {
                     </View>
                   </Card>
                 )}
-              />
-              {/* Top gradient shadow */}
-              <LinearGradient
-                colors={[gradientColor, gradientColor + "00"]}
-                style={styles.topShadow}
-                pointerEvents="none"
-              />
-
-              {/* Bottom gradient shadow */}
-              <LinearGradient
-                colors={[gradientColor + "00", gradientColor]}
-                style={styles.bottomShadow}
-                pointerEvents="none"
               />
             </View>
 
@@ -387,6 +368,10 @@ const styles = StyleSheet.create({
 
   reciptItemsList: {
     flex: 20,
+    borderRadius: 12,
+    backgroundColor: "#fafafa",
+    paddingHorizontal: 8,
+    paddingTop: 8,
   },
 
   cardStyle: {
@@ -532,24 +517,6 @@ const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: 16,
     padding: 4,
-  },
-
-  topShadow: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 20,
-    zIndex: 10,
-  },
-
-  bottomShadow: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 40,
-    zIndex: 10,
   },
 });
 
