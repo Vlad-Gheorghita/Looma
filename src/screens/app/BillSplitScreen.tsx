@@ -32,6 +32,7 @@ const BillSplitScreen: React.FC = () => {
   const navigation = useNavigation();
   const [editCardPopupVisible, setEditCardPopupVisible] = useState(false);
   const [addPersonPopupVisible, setAddPersonPopupVisible] = useState(false);
+  const [totalBreakdownPopupVisible, setTotalBreakdownPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<BillItem | undefined>(
     undefined
   );
@@ -197,6 +198,40 @@ const BillSplitScreen: React.FC = () => {
     setEditCardPopupVisible(false);
   };
 
+  const openTotalBreakdownPopup = (): void => {
+    setTotalBreakdownPopupVisible(true);
+  };
+
+  const closeTotalBreakdownPopup = (): void => {
+    setTotalBreakdownPopupVisible(false);
+  };
+
+  // Calculate how much each person owes
+  const calculatePersonTotals = () => {
+    const personTotals: { [personIndex: number]: number } = {};
+    
+    // Initialize all persons with 0
+    persons.forEach((_, index) => {
+      personTotals[index] = 0;
+    });
+
+    // Calculate totals for each person based on their shares
+    billItems.forEach(item => {
+      const itemPrice = parseFloat(item.price);
+      const shares = getSharesForItem(item.id);
+      const totalShares = shares.reduce((sum, share) => sum + share.shares, 0);
+      
+      if (totalShares > 0) {
+        shares.forEach(share => {
+          const personAmount = (itemPrice * share.shares) / totalShares;
+          personTotals[share.personIndex] += personAmount;
+        });
+      }
+    });
+
+    return personTotals;
+  };
+
   return (
     <View style={[globalStyling.pageStyle]}>
       {/* <Button title="Upload Photo" onPress={handleScanBill} /> */}
@@ -283,12 +318,14 @@ const BillSplitScreen: React.FC = () => {
             </View>
 
             <Card style={styles.cardStyle}>
-              <View style={styles.cardTotalStyle}>
-                <Text style={{ fontWeight: "bold" }}>Total</Text>
-                <Text style={{ fontWeight: "bold" }}>
-                  {billTotal} {billItems[0]?.currency ?? "RON"}
-                </Text>
-              </View>
+              <Pressable onPress={openTotalBreakdownPopup}>
+                <View style={styles.cardTotalStyle}>
+                  <Text style={{ fontWeight: "bold" }}>Total</Text>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {billTotal} {billItems[0]?.currency ?? "RON"}
+                  </Text>
+                </View>
+              </Pressable>
             </Card>
           </>
         )}
@@ -465,6 +502,73 @@ const BillSplitScreen: React.FC = () => {
               title: styles.doneButtonText,
             }}
           />
+        </View>
+      </AnimatedPopupCard>
+
+      <AnimatedPopupCard
+        visible={totalBreakdownPopupVisible}
+        onClose={closeTotalBreakdownPopup}
+      >
+        <View style={styles.totalBreakdownPopupContainer}>
+          <View style={styles.totalBreakdownHeader}>
+            <Text style={styles.totalBreakdownTitle}>Bill Split Breakdown</Text>
+            <Pressable 
+              onPress={closeTotalBreakdownPopup}
+              style={styles.closeButtonContainer}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <CloseIcon width={30} height={30} />
+            </Pressable>
+          </View>
+          
+          <View style={styles.totalBreakdownContent}>
+            <FlatList
+              data={persons}
+              keyExtractor={(_, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+              style={styles.personTotalsList}
+              renderItem={({ item: person, index: personIndex }) => {
+                const personTotals = calculatePersonTotals();
+                const personAmount = personTotals[personIndex] || 0;
+                const currency = billItems[0]?.currency ?? "RON";
+                
+                return (
+                  <View style={styles.personTotalItem}>
+                    <View style={styles.personTotalInfo}>
+                      <Avatar
+                        initials={getPersonInitials(person.name)}
+                        size={48}
+                        isSelected={personAmount > 0}
+                        selectedColor="#4D96FF"
+                        unselectedColor="#E5E7EB"
+                      />
+                      <View style={styles.personTotalDetails}>
+                        <Text style={[
+                          styles.personTotalName,
+                          { color: personAmount > 0 ? "#374151" : "#9CA3AF" }
+                        ]}>
+                          {person.name}
+                        </Text>
+                        <Text style={styles.personTotalAmount}>
+                          {personAmount.toFixed(2)} {currency}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              }}
+              ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+            />
+            
+            <View style={styles.totalSummaryCard}>
+              <View style={styles.totalSummaryRow}>
+                <Text style={styles.totalSummaryLabel}>Total Bill:</Text>
+                <Text style={styles.totalSummaryValue}>
+                  {billTotal} {billItems[0]?.currency ?? "RON"}
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
       </AnimatedPopupCard>
     </View>
@@ -863,6 +967,98 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#6B7280",
     marginBottom: 2,
+  },
+
+  // Total breakdown popup styles
+  totalBreakdownPopupContainer: {
+    alignItems: "stretch",
+    padding: 16,
+    gap: 16,
+    maxHeight: "85%",
+    minHeight: 400,
+  },
+
+  totalBreakdownHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  totalBreakdownTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#374151",
+  },
+
+  totalBreakdownContent: {
+    flex: 1,
+  },
+
+  personTotalsList: {
+    flex: 1,
+    marginBottom: 16,
+  },
+
+  personTotalItem: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  personTotalInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+
+  personTotalDetails: {
+    flex: 1,
+  },
+
+  personTotalName: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+
+  personTotalAmount: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#059669",
+  },
+
+  totalSummaryCard: {
+    backgroundColor: '#f3f4f6',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+  },
+
+  totalSummaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  totalSummaryLabel: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#374151",
+  },
+
+  totalSummaryValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1f2937",
   },
 });
 
