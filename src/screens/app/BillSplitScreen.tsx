@@ -182,11 +182,16 @@ const BillSplitScreen: React.FC = () => {
       <View style={styles.reciptItemsListContainer}>
         {persons.length === 0 ? (
           <View style={styles.pleaseMessageContainer}>
-            <Text style={styles.pleaseMessageText}>Please add people to split with</Text>
+            <Text style={styles.pleaseMessageText}>
+              Welcome to Bill Split!{'\n'}
+              Tap the + button above to add people to split with
+            </Text>
           </View>
         ) : billItems.length === 0 ? (
           <View style={styles.pleaseMessageContainer}>
-            <Text style={styles.pleaseMessageText}>Please scan a receipt</Text>
+            <Text style={styles.pleaseMessageText}>
+              Great! Now tap the receipt above to scan your bill
+            </Text>
           </View>
         ) : (
           <>
@@ -262,24 +267,49 @@ const BillSplitScreen: React.FC = () => {
             </View>
           </View>
           <View style={styles.cardPopupPersonsContainer}>
-            {persons.map((person, personIndex) => (
-              <View key={personIndex} style={styles.personAvatarContainer}>
-                <Avatar
-                  initials={getPersonInitials(person.name)}
-                  size={48}
-                  isSelected={selectedItem ? isPersonSelectedForItem(selectedItem, personIndex) : false}
-                  onPress={() => selectedItem && togglePersonForItem(selectedItem, personIndex)}
-                  selectedColor="#4D96FF"
-                  unselectedColor="#E5E7EB"
-                />
-                <Text style={[
-                  styles.personNameLabel,
-                  { color: selectedItem && isPersonSelectedForItem(selectedItem, personIndex) ? "#4D96FF" : "#6B7280" }
-                ]}>
-                  {person.name}
+            {persons.length === 0 ? (
+              <View style={styles.noPersonsContainer}>
+                <Text style={styles.noPersonsMessage}>
+                  No people added yet.{'\n'}
+                  Tap the + button above to add people to split with.
                 </Text>
+                <Button
+                  title="Add People"
+                  onPress={() => {
+                    closeCardPopup();
+                    setTimeout(() => setAddPersonPopupVisible(true), 300);
+                  }}
+                  styling={{
+                    button: { marginTop: 16, paddingHorizontal: 20 }
+                  }}
+                />
               </View>
-            ))}
+            ) : (
+              <FlatList
+                data={persons}
+                keyExtractor={(_, index) => index.toString()}
+                showsVerticalScrollIndicator={true}
+                style={styles.personsVerticalList}
+                renderItem={({ item: person, index: personIndex }) => (
+                  <View style={styles.personVerticalItem}>
+                    <Avatar
+                      initials={getPersonInitials(person.name)}
+                      size={48}
+                      isSelected={selectedItem ? isPersonSelectedForItem(selectedItem, personIndex) : false}
+                      onPress={() => selectedItem && togglePersonForItem(selectedItem, personIndex)}
+                      selectedColor="#4D96FF"
+                      unselectedColor="#E5E7EB"
+                    />
+                    <Text style={[
+                      styles.personNameLabel,
+                      { color: selectedItem && isPersonSelectedForItem(selectedItem, personIndex) ? "#4D96FF" : "#6B7280" }
+                    ]}>
+                      {person.name}
+                    </Text>
+                  </View>
+                )}
+              />
+            )}
           </View>
         </View>
       </AnimatedPopupCard>
@@ -444,9 +474,10 @@ const styles = StyleSheet.create({
 
   cardPopupContainer: {
     alignItems: "stretch",
-    padding: "2%",
+    padding: 16,
     paddingTop: 0,
-    gap: 10,
+    gap: 16,
+    maxHeight: "90%", // Limit popup height to 90% of screen
   },
 
   cardPopupHeader: {
@@ -467,10 +498,21 @@ const styles = StyleSheet.create({
   },
 
   cardPopupPersonsContainer: { 
-    gap: 20,
+    // Remove flex and height, let it size naturally
+  },
+
+  personsVerticalList: {
+    maxHeight: 300, // Similar to the working personsScrollableList
+  },
+
+  personVerticalItem: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
+    gap: 16,
   },
 
   personAvatarContainer: {
@@ -479,15 +521,29 @@ const styles = StyleSheet.create({
   },
 
   personNameLabel: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: "500",
-    textAlign: "center",
+    flex: 1,
   },
 
   noPersonsText: {
     fontSize: 12,
     color: "#9CA3AF",
     fontStyle: "italic",
+  },
+
+  noPersonsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+
+  noPersonsMessage: {
+    fontSize: 16,
+    color: "#6B7280",
+    textAlign: "center",
+    lineHeight: 24,
   },
 
   addPersonPopupContainer: {
