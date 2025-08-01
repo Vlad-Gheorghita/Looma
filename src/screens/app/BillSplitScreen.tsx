@@ -287,17 +287,24 @@ const BillSplitScreen: React.FC = () => {
           {persons.length > 0 && (
             <View style={styles.personsListContainer}>
               <Text style={styles.personsListTitle}>People:</Text>
-              {persons.map((person, index) => (
-                <View key={index} style={styles.personItem}>
-                  <Text style={styles.personName}>{person.name}</Text>
-                  <Pressable
-                    onPress={() => removePerson(index)}
-                    style={styles.removePersonButton}
-                  >
-                    <Text style={styles.removePersonText}>×</Text>
-                  </Pressable>
-                </View>
-              ))}
+              <FlatList
+                style={styles.personsScrollableList}
+                data={persons}
+                keyExtractor={(_, index) => index.toString()}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item, index }) => (
+                  <View style={styles.personItem}>
+                    <Text style={styles.personName}>{item.name}</Text>
+                    <Pressable
+                      onPress={() => removePerson(index)}
+                      style={styles.removePersonButton}
+                    >
+                      <Text style={styles.removePersonText}>×</Text>
+                    </Pressable>
+                  </View>
+                )}
+                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+              />
             </View>
           )}
 
@@ -440,6 +447,7 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     padding: 16,
     gap: 16,
+    maxHeight: "90%", // Ensure popup doesn't exceed 90% of screen height
   },
 
   addPersonTitle: {
@@ -474,6 +482,10 @@ const styles = StyleSheet.create({
 
   personsListContainer: {
     gap: 8,
+  },
+
+  personsScrollableList: {
+    maxHeight: 200, // Limit height to prevent popup overflow
   },
 
   personsListTitle: {
