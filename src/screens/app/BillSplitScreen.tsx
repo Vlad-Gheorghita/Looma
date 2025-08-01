@@ -184,6 +184,10 @@ const BillSplitScreen: React.FC = () => {
       <View style={styles.reciptItemsListContainer}>
         {persons.length === 0 ? (
           <View style={styles.pleaseMessageContainer}>
+            <Text style={styles.pleaseMessageText}>Please add people to split with</Text>
+          </View>
+        ) : billItems.length === 0 ? (
+          <View style={styles.pleaseMessageContainer}>
             <Text style={styles.pleaseMessageText}>Please scan a receipt</Text>
           </View>
         ) : (
@@ -192,7 +196,7 @@ const BillSplitScreen: React.FC = () => {
               <FlatList
                 contentContainerStyle={{ gap: 10, paddingBottom: 8 }}
                 showsVerticalScrollIndicator={false}
-                data={cardData}
+                data={billItems}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <Card style={styles.cardStyle}>
