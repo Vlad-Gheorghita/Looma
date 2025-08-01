@@ -28,6 +28,16 @@ import { Person } from "../../types/billScanning/personType";
 import { useNavigation } from "@react-navigation/native";
 import { parseReceiptResponse } from "@utils";
 
+// Move openCardPopup outside the component and pass setters as arguments
+const openCardPopup = (
+  item: BillItem,
+  setSelectedItem: React.Dispatch<React.SetStateAction<BillItem | undefined>>,
+  setEditCardPopupVisible: React.Dispatch<React.SetStateAction<boolean>>
+): void => {
+  setSelectedItem(item);
+  setEditCardPopupVisible(true);
+};
+
 const BillSplitScreen: React.FC = () => {
   const navigation = useNavigation();
   const [editCardPopupVisible, setEditCardPopupVisible] = useState(false);
@@ -117,61 +127,35 @@ const BillSplitScreen: React.FC = () => {
     setNewPersonName("");
   };
 
-  const cardData: BillItem[] = [
-    {
-      id: 1,
-      name: "Banane",
-      price: "5.67",
-      currency: "LEI",
-    },
-    {
-      id: 2,
-      name: "Carne",
-      price: "27.30",
-      currency: "LEI",
-    },
-    {
-      id: 3,
-      name: "Paine",
-      price: "5.32",
-      currency: "LEI",
-    },
-    {
-      id: 4,
-      name: "Lapte",
-      price: "9.99",
-      currency: "LEI",
-    },
-    {
-      id: 5,
-      name: "Lapte",
-      price: "9.99",
-      currency: "LEI",
-    },
-    {
-      id: 6,
-      name: "Lapte",
-      price: "9.99",
-      currency: "LEI",
-    },
-    {
-      id: 7,
-      name: "Lapte",
-      price: "9.99",
-      currency: "LEI",
-    },
-    {
-      id: 8,
-      name: "Lapte",
-      price: "9.99",
-      currency: "LEI",
-    },
-  ];
-
-  const openCardPopup = (item: BillItem): void => {
-    setSelectedItem(item);
-    setEditCardPopupVisible(true);
+  const togglePersonForItem = (billItem: BillItem, personIndex: number) => {
+    setPersons(prevPersons => {
+      const updatedPersons = [...prevPersons];
+      const person = updatedPersons[personIndex];
+      
+      // Check if this item is already in the person's payingItems
+      const itemIndex = person.payingItems.findIndex(item => item.id === billItem.id);
+      
+      if (itemIndex >= 0) {
+        // Remove item from person's payingItems immutably
+        person.payingItems = person.payingItems.filter(item => item.id !== billItem.id);
+      } else {
+        // Add item to person's payingItems immutably
+        person.payingItems = [...person.payingItems, billItem];
+      }
+      console.log(`Updated ${person.name}'s paying items:`, person.payingItems);
+      return updatedPersons;
+    });
   };
+
+  const isPersonSelectedForItem = (billItem: BillItem, personIndex: number): boolean => {
+    return persons[personIndex]?.payingItems.some(item => item.id === billItem.id) || false;
+  };
+
+  const getPersonInitials = (name: string): string => {
+    return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2);
+  };
+
+  // openCardPopup moved outside the component to avoid recreation on each render
 
   const closeCardPopup = (): void => {
     setEditCardPopupVisible(false);
@@ -215,7 +199,7 @@ const BillSplitScreen: React.FC = () => {
                 renderItem={({ item }) => (
                   <Card style={styles.cardStyle}>
                     <View style={styles.cardItemDetailsStyle}>
-                      <Pressable onPress={() => openCardPopup(item)}>
+                      <Pressable onPress={() => openCardPopup(item, setSelectedItem, setEditCardPopupVisible)}>
                         <View style={[styles.cartItemNameContainer]}>
                           <Text style={{ fontWeight: "bold" }}>
                             {item.name}
@@ -228,10 +212,21 @@ const BillSplitScreen: React.FC = () => {
                       </Text>
                     </View>
                     <View style={styles.cardAssignedPersonsStyle}>
-                      <Avatar initials="Vl" />
-                      <Avatar initials="La" />
-                      <Avatar initials="Da" />
-                      <Avatar initials="Dr" />
+                      {persons.length > 0 ? (
+                        persons.map((person, personIndex) => (
+                          <Avatar
+                            key={personIndex}
+                            initials={getPersonInitials(person.name)}
+                            size={36}
+                            isSelected={isPersonSelectedForItem(item, personIndex)}
+                            onPress={() => togglePersonForItem(item, personIndex)}
+                            selectedColor="#4D96FF"
+                            unselectedColor="#E5E7EB"
+                          />
+                        ))
+                      ) : (
+                        <Text style={styles.noPersonsText}>No people added</Text>
+                      )}
                     </View>
                   </Card>
                 )}
@@ -267,10 +262,24 @@ const BillSplitScreen: React.FC = () => {
             </View>
           </View>
           <View style={styles.cardPopupPersonsContainer}>
-            <Avatar initials="Vl" />
-            <Avatar initials="La" />
-            <Avatar initials="Da" />
-            <Avatar initials="Dr" />
+            {persons.map((person, personIndex) => (
+              <View key={personIndex} style={styles.personAvatarContainer}>
+                <Avatar
+                  initials={getPersonInitials(person.name)}
+                  size={48}
+                  isSelected={selectedItem ? isPersonSelectedForItem(selectedItem, personIndex) : false}
+                  onPress={() => selectedItem && togglePersonForItem(selectedItem, personIndex)}
+                  selectedColor="#4D96FF"
+                  unselectedColor="#E5E7EB"
+                />
+                <Text style={[
+                  styles.personNameLabel,
+                  { color: selectedItem && isPersonSelectedForItem(selectedItem, personIndex) ? "#4D96FF" : "#6B7280" }
+                ]}>
+                  {person.name}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
       </AnimatedPopupCard>
@@ -457,7 +466,29 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  cardPopupPersonsContainer: { gap: 20 },
+  cardPopupPersonsContainer: { 
+    gap: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+
+  personAvatarContainer: {
+    alignItems: "center",
+    gap: 8,
+  },
+
+  personNameLabel: {
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+
+  noPersonsText: {
+    fontSize: 12,
+    color: "#9CA3AF",
+    fontStyle: "italic",
+  },
 
   addPersonPopupContainer: {
     alignItems: "stretch",
