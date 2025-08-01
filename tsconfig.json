@@ -14,7 +14,7 @@
       "@components": ["components/index"],
       "@constants/*": ["constants/*"],
       "@screens": ["screens/index"],
-      "@utils/*": ["utils/*"],
+      "@utils": ["utils/index"],
       "@colors": ["styles/colors"],
       "@authService": ["services/firebase/authService"],
       "@toastService": ["services/toaster/toastService"],

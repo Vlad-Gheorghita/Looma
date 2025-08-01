@@ -3,7 +3,7 @@ import { User, AuthState } from "../types/authTypes";
 import { authService, googleAuthService } from "@authService";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { ToastService as toastService } from "@toastService";
-import { handleAuthError } from "@utils/handleAuthError";
+import { handleAuthError } from "@utils";
 
 
 type GoogleSignInParams = {

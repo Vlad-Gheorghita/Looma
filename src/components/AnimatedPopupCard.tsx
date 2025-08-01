@@ -78,7 +78,8 @@ const styles = StyleSheet.create({
   popup: {
     width: width * 0.8,
     backgroundColor: "#fff",
-    padding: 24,
+    padding: 0,
+    paddingTop: 16,
     borderRadius: 16,
     elevation: 10,
     shadowColor: "#000",

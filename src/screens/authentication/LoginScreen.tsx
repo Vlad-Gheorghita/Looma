@@ -46,14 +46,6 @@ const LoginScreen: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async (): Promise<void> => {
-    try {
-      await login({ loginType: "google" });
-    } catch (error: any) {
-      console.log(error.message);
-    }
-  };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
