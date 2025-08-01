@@ -26,6 +26,7 @@ import AddPersonIcon from "@icons/add-person-icon.svg";
 import { BillItem } from "../../types/billScanning/billItemType";
 import { Person } from "../../types/billScanning/personType";
 import { useNavigation } from "@react-navigation/native";
+import { parseReceiptResponse } from "@utils";
 
 const BillSplitScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -37,6 +38,7 @@ const BillSplitScreen: React.FC = () => {
   const [persons, setPersons] = useState<Person[]>([]);
   const [newPersonName, setNewPersonName] = useState("");
   const [billItems, setBillItems] = useState<BillItem[]>([]);
+  const [billTotal, setBillTotal] = useState<string>("0.00");
 
   const { scale } = usePulseAnimation();
   const animatedStyle = useAnimatedStyle(() => {
@@ -67,8 +69,20 @@ const BillSplitScreen: React.FC = () => {
       if (image.canceled) return;
 
       const aiResult = await readRecipt(image);
-      console.log(aiResult.text);
+      console.log("AI Response:", aiResult.text);
+      
+      // Parse the JSON response using utility function
+      const { items, total } = parseReceiptResponse(aiResult.text);
+      
+      // Update state with parsed data
+      setBillItems(items);
+      setBillTotal(total);
+      
+      console.log("Parsed items:", items);
+      console.log("Total:", total);
+      
     } catch (error) {
+      console.error("Error parsing receipt data:", error);
       ToastService.error("Error Scanning Receipt");
     }
   };
@@ -227,7 +241,9 @@ const BillSplitScreen: React.FC = () => {
             <Card style={styles.cardStyle}>
               <View style={styles.cardTotalStyle}>
                 <Text style={{ fontWeight: "bold" }}>Total</Text>
-                <Text style={{ fontWeight: "bold" }}>127.38 LEI</Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  {billTotal} {billItems[0]?.currency ?? "RON"}
+                </Text>
               </View>
             </Card>
           </>
