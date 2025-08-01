@@ -23,20 +23,10 @@ import { ToastService } from "@toastService";
 import EditIcon from "@icons/edit-icon.svg";
 import CloseIcon from "@icons/close-square-icon.svg";
 import AddPersonIcon from "@icons/add-person-icon.svg";
-import { BillItem } from "../../types/billScanning/billItemType";
-import { Person } from "../../types/billScanning/personType";
+import { BillItem, PersonShare } from "../../types/billScanning/billItemType";
+import { Person, ItemShareData } from "../../types/billScanning/personType";
 import { useNavigation } from "@react-navigation/native";
 import { parseReceiptResponse } from "@utils";
-
-// Move openCardPopup outside the component and pass setters as arguments
-const openCardPopup = (
-  item: BillItem,
-  setSelectedItem: React.Dispatch<React.SetStateAction<BillItem | undefined>>,
-  setEditCardPopupVisible: React.Dispatch<React.SetStateAction<boolean>>
-): void => {
-  setSelectedItem(item);
-  setEditCardPopupVisible(true);
-};
 
 const BillSplitScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -49,6 +39,13 @@ const BillSplitScreen: React.FC = () => {
   const [newPersonName, setNewPersonName] = useState("");
   const [billItems, setBillItems] = useState<BillItem[]>([]);
   const [billTotal, setBillTotal] = useState<string>("0.00");
+  const [itemShares, setItemShares] = useState<ItemShareData>({}); // New state for managing shares
+
+  // Move openCardPopup inside the component to access state
+  const openCardPopup = (item: BillItem): void => {
+    setSelectedItem(item);
+    setEditCardPopupVisible(true);
+  };
 
   const { scale } = usePulseAnimation();
   const animatedStyle = useAnimatedStyle(() => {
@@ -128,34 +125,73 @@ const BillSplitScreen: React.FC = () => {
   };
 
   const togglePersonForItem = (billItem: BillItem, personIndex: number) => {
-    setPersons(prevPersons => {
-      const updatedPersons = [...prevPersons];
-      const person = updatedPersons[personIndex];
-      
-      // Check if this item is already in the person's payingItems
-      const itemIndex = person.payingItems.findIndex(item => item.id === billItem.id);
-      
-      if (itemIndex >= 0) {
-        // Remove item from person's payingItems immutably
-        person.payingItems = person.payingItems.filter(item => item.id !== billItem.id);
-      } else {
-        // Add item to person's payingItems immutably
-        person.payingItems = [...person.payingItems, billItem];
-      }
-      console.log(`Updated ${person.name}'s paying items:`, person.payingItems);
-      return updatedPersons;
-    });
+    const currentShares = getPersonShareForItem(billItem.id, personIndex);
+    if (currentShares > 0) {
+      // Remove person from item (set shares to 0)
+      updatePersonShares(billItem.id, personIndex, 0);
+    } else {
+      // Add person to item with 1 share by default
+      updatePersonShares(billItem.id, personIndex, 1);
+    }
   };
 
   const isPersonSelectedForItem = (billItem: BillItem, personIndex: number): boolean => {
-    return persons[personIndex]?.payingItems.some(item => item.id === billItem.id) || false;
+    return isPersonAssignedToItem(billItem.id, personIndex);
   };
 
   const getPersonInitials = (name: string): string => {
     return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2);
   };
 
-  // openCardPopup moved outside the component to avoid recreation on each render
+  // New share management functions
+  const getSharesForItem = (itemId: number): PersonShare[] => {
+    return itemShares[itemId] || [];
+  };
+
+  const updatePersonShares = (itemId: number, personIndex: number, shares: number) => {
+    setItemShares(prevShares => {
+      const itemSharesArray = prevShares[itemId] || [];
+      const existingShareIndex = itemSharesArray.findIndex(share => share.personIndex === personIndex);
+      
+      let updatedShares: PersonShare[];
+      
+      if (shares <= 0) {
+        // Remove person from shares if shares is 0 or negative
+        updatedShares = itemSharesArray.filter(share => share.personIndex !== personIndex);
+      } else {
+        if (existingShareIndex >= 0) {
+          // Update existing share
+          updatedShares = [...itemSharesArray];
+          updatedShares[existingShareIndex] = { personIndex, shares };
+        } else {
+          // Add new share
+          updatedShares = [...itemSharesArray, { personIndex, shares }];
+        }
+      }
+
+      // Calculate percentages
+      const totalShares = updatedShares.reduce((sum, share) => sum + share.shares, 0);
+      const sharesWithPercentages = updatedShares.map(share => ({
+        ...share,
+        percentage: totalShares > 0 ? (share.shares / totalShares) * 100 : 0
+      }));
+
+      return {
+        ...prevShares,
+        [itemId]: sharesWithPercentages
+      };
+    });
+  };
+
+  const getPersonShareForItem = (itemId: number, personIndex: number): number => {
+    const shares = getSharesForItem(itemId);
+    const personShare = shares.find(share => share.personIndex === personIndex);
+    return personShare?.shares || 0;
+  };
+
+  const isPersonAssignedToItem = (itemId: number, personIndex: number): boolean => {
+    return getPersonShareForItem(itemId, personIndex) > 0;
+  };
 
   const closeCardPopup = (): void => {
     setEditCardPopupVisible(false);
@@ -204,7 +240,7 @@ const BillSplitScreen: React.FC = () => {
                 renderItem={({ item }) => (
                   <Card style={styles.cardStyle}>
                     <View style={styles.cardItemDetailsStyle}>
-                      <Pressable onPress={() => openCardPopup(item, setSelectedItem, setEditCardPopupVisible)}>
+                      <Pressable onPress={() => openCardPopup(item)}>
                         <View style={[styles.cartItemNameContainer]}>
                           <Text style={{ fontWeight: "bold" }}>
                             {item.name}
@@ -218,17 +254,25 @@ const BillSplitScreen: React.FC = () => {
                     </View>
                     <View style={styles.cardAssignedPersonsStyle}>
                       {persons.length > 0 ? (
-                        persons.map((person, personIndex) => (
-                          <Avatar
-                            key={personIndex}
-                            initials={getPersonInitials(person.name)}
-                            size={36}
-                            isSelected={isPersonSelectedForItem(item, personIndex)}
-                            onPress={() => togglePersonForItem(item, personIndex)}
-                            selectedColor="#4D96FF"
-                            unselectedColor="#E5E7EB"
-                          />
-                        ))
+                        persons.map((person, personIndex) => {
+                          const shares = getPersonShareForItem(item.id, personIndex);
+                          const isAssigned = shares > 0;
+                          return (
+                            <View key={personIndex} style={styles.personAvatarContainer}>
+                              <Avatar
+                                initials={getPersonInitials(person.name)}
+                                size={36}
+                                isSelected={isAssigned}
+                                onPress={() => togglePersonForItem(item, personIndex)}
+                                selectedColor="#4D96FF"
+                                unselectedColor="#E5E7EB"
+                              />
+                              {isAssigned && (
+                                <Text style={styles.sharesBadge}>{shares}</Text>
+                              )}
+                            </View>
+                          );
+                        })
                       ) : (
                         <Text style={styles.noPersonsText}>No people added</Text>
                       )}
@@ -261,7 +305,11 @@ const BillSplitScreen: React.FC = () => {
               <Text style={{ fontWeight: "bold" }}>
                 {selectedItem?.price} {selectedItem?.currency}
               </Text>
-              <Pressable onPress={() => closeCardPopup()}>
+              <Pressable 
+                onPress={() => closeCardPopup()}
+                style={styles.closeButtonContainer}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
                 <CloseIcon width={30} height={30} />
               </Pressable>
             </View>
@@ -285,30 +333,75 @@ const BillSplitScreen: React.FC = () => {
                 />
               </View>
             ) : (
-              <FlatList
-                data={persons}
-                keyExtractor={(_, index) => index.toString()}
-                showsVerticalScrollIndicator={true}
-                style={styles.personsVerticalList}
-                renderItem={({ item: person, index: personIndex }) => (
-                  <View style={styles.personVerticalItem}>
-                    <Avatar
-                      initials={getPersonInitials(person.name)}
-                      size={48}
-                      isSelected={selectedItem ? isPersonSelectedForItem(selectedItem, personIndex) : false}
-                      onPress={() => selectedItem && togglePersonForItem(selectedItem, personIndex)}
-                      selectedColor="#4D96FF"
-                      unselectedColor="#E5E7EB"
-                    />
-                    <Text style={[
-                      styles.personNameLabel,
-                      { color: selectedItem && isPersonSelectedForItem(selectedItem, personIndex) ? "#4D96FF" : "#6B7280" }
-                    ]}>
-                      {person.name}
-                    </Text>
-                  </View>
-                )}
-              />
+              <View style={styles.sharesContainer}>
+                <FlatList
+                  data={persons}
+                  keyExtractor={(_, index) => index.toString()}
+                  showsVerticalScrollIndicator={false}
+                  style={[styles.personsVerticalList]}
+                  contentContainerStyle={{padding: 8, flexGrow: 1}}
+                  renderItem={({ item: person, index: personIndex }) => {
+                    const currentShares = getPersonShareForItem(selectedItem?.id || 0, personIndex);
+                    const shares = getSharesForItem(selectedItem?.id || 0);
+                    const totalShares = shares.reduce((sum, share) => sum + share.shares, 0);
+                    const percentage = totalShares > 0 && currentShares > 0 
+                      ? ((currentShares / totalShares) * 100).toFixed(1) 
+                      : '0';
+
+                    return (
+                      <View style={[styles.personShareItem]}>
+                        <View style={styles.personShareRow}>
+                          <View style={styles.personShareInfo}>
+                            <Avatar
+                              initials={getPersonInitials(person.name)}
+                              size={48}
+                              isSelected={currentShares > 0}
+                              onPress={() => {
+                                if (currentShares > 0) {
+                                  updatePersonShares(selectedItem?.id || 0, personIndex, 0);
+                                } else {
+                                  updatePersonShares(selectedItem?.id || 0, personIndex, 1);
+                                }
+                              }}
+                              selectedColor="#4D96FF"
+                              unselectedColor="#E5E7EB"
+                            />
+                            <View style={styles.personShareDetails}>
+                              <Text style={[
+                                styles.personNameLabel,
+                                { color: currentShares > 0 ? "#4D96FF" : "#6B7280" }
+                              ]}>
+                                {person.name}
+                              </Text>
+                              <Text style={styles.percentageLabel}>
+                                {percentage}%
+                              </Text>
+                            </View>
+                          </View>
+                          <View style={styles.shareInputContainer}>
+                            <Input
+                              value={currentShares.toString()}
+                              onChangeText={(value) => {
+                                const shares = parseInt(value) || 0;
+                                updatePersonShares(selectedItem?.id || 0, personIndex, shares);
+                              }}
+                              keyboardType="numeric"
+                              style={[
+                                styles.shareInput,
+                                { 
+                                  borderColor: currentShares > 0 ? "#4D96FF" : "#E5E7EB",
+                                  backgroundColor: currentShares > 0 ? "#F0F7FF" : "#FFFFFF"
+                                }
+                              ]}
+                              placeholder="0"
+                            />
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
             )}
           </View>
         </View>
@@ -477,7 +570,8 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 0,
     gap: 16,
-    maxHeight: "90%", // Limit popup height to 90% of screen
+    maxHeight: "85%", // Reduce from 90% to ensure content fits
+    minHeight: 400, // Ensure minimum height for content
   },
 
   cardPopupHeader: {
@@ -492,17 +586,23 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
+  closeButtonContainer: {
+    padding: 4,
+    borderRadius: 4,
+  },
+
   cardPopupItemDetails: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
 
   cardPopupPersonsContainer: { 
-    // Remove flex and height, let it size naturally
+    flex: 1, // Take available space
+    minHeight: 200, // Ensure minimum height
   },
 
   personsVerticalList: {
-    maxHeight: 300, // Similar to the working personsScrollableList
+    flex: 1, // Take available space within parent
   },
 
   personVerticalItem: {
@@ -518,6 +618,19 @@ const styles = StyleSheet.create({
   personAvatarContainer: {
     alignItems: "center",
     gap: 8,
+  },
+
+  sharesBadge: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: "#4D96FF",
+    backgroundColor: "#F0F7FF",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    minWidth: 20,
+    textAlign: "center",
+    marginTop: 2,
   },
 
   personNameLabel: {
@@ -636,6 +749,107 @@ const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: 16,
     padding: 4,
+  },
+
+  // New styles for sharing functionality
+  sharesContainer: {
+    flex: 1,
+  },
+
+  sharesTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#374151",
+    marginBottom: 4,
+  },
+
+  sharesSubtitle: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+
+  personShareItem: {
+    backgroundColor: '#ffffff',
+    marginBottom: 8,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+
+  personShareRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  personShareInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 12,
+  },
+
+  personShareDetails: {
+    flex: 1,
+  },
+
+  percentageLabel: {
+    fontSize: 12,
+    color: "#9CA3AF",
+    marginTop: 2,
+  },
+
+  shareInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+
+  shareInput: {
+    width: 60,
+    height: 36,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+
+  shareInputLabel: {
+    fontSize: 12,
+    color: "#6B7280",
+    fontWeight: "500",
+  },
+
+  shareSummary: {
+    marginTop: 16,
+    padding: 12,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+
+  shareSummaryTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#374151",
+    marginBottom: 8,
+  },
+
+  shareSummaryText: {
+    fontSize: 13,
+    color: "#6B7280",
+    marginBottom: 2,
   },
 });
 
