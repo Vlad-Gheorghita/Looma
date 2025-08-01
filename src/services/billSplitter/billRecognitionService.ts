@@ -16,7 +16,25 @@ const ai = new GoogleGenAI({
 
 const prompt = `You are an expert receipt data extractor.
                 You will receive an image of a receipt, and your job is to extract all of the items and their prices from the receipt.
-                Output the items and prices in JSON format that contains a list of items with the item name and price, and a total of the recipt`;
+                
+                Return ONLY a valid JSON object containing:
+                - items: an array of items, each with:
+                  - id: auto-generated sequential number starting from 1
+                  - name: the item name from the receipt
+                  - price: the price as a string (numbers only, no currency symbols)
+                  - currency: always set to "RON"
+                - total: the total price of the receipt as a string (numbers only, no currency symbols)
+                
+                Example format:
+                {
+                  "items": [
+                    {"id": 1, "name": "Bread", "price": "5.50", "currency": "RON"},
+                    {"id": 2, "name": "Milk", "price": "8.99", "currency": "RON"}
+                  ],
+                  "total": "14.49"
+                }
+                
+                Return only the JSON object, no additional text or explanation.`;
 
 export const pickImage = async (options?: ImagePickerOptions): Promise<ImagePicker.ImagePickerResult> => {
   const image = await ImagePicker.launchImageLibraryAsync({
