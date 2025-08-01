@@ -300,19 +300,19 @@ const BillSplitScreen: React.FC = () => {
       >
         <View style={styles.cardPopupContainer}>
           <View style={styles.cardPopupHeader}>
-            <Text style={{ fontWeight: "bold" }}>{selectedItem?.name}</Text>
-            <View style={styles.cardPopupHeaderClose}>
-              <Text style={{ fontWeight: "bold" }}>
+            <View style={styles.cardPopupHeaderLeft}>
+              <Text style={styles.itemNameText}>{selectedItem?.name}</Text>
+              <Text style={styles.itemPriceText}>
                 {selectedItem?.price} {selectedItem?.currency}
               </Text>
-              <Pressable 
-                onPress={() => closeCardPopup()}
-                style={styles.closeButtonContainer}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <CloseIcon width={30} height={30} />
-              </Pressable>
             </View>
+            <Pressable 
+              onPress={() => closeCardPopup()}
+              style={styles.closeButtonContainer}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <CloseIcon width={30} height={30} />
+            </Pressable>
           </View>
           <View style={styles.cardPopupPersonsContainer}>
             {persons.length === 0 ? (
@@ -577,13 +577,26 @@ const styles = StyleSheet.create({
   cardPopupHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    marginBottom: 16,
   },
 
-  cardPopupHeaderClose: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
+  cardPopupHeaderLeft: {
+    flex: 1,
+    alignItems: "flex-start",
+  },
+
+  itemNameText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#374151",
+    marginBottom: 4,
+  },
+
+  itemPriceText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#6B7280",
   },
 
   closeButtonContainer: {
