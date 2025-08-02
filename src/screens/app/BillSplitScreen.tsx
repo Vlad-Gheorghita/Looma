@@ -343,13 +343,6 @@ const BillSplitScreen: React.FC = () => {
                 {selectedItem?.price} {selectedItem?.currency}
               </Text>
             </View>
-            <Pressable 
-              onPress={() => closeCardPopup()}
-              style={styles.closeButtonContainer}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <CloseIcon width={30} height={30} />
-            </Pressable>
           </View>
           <View style={styles.cardPopupPersonsContainer}>
             {persons.length === 0 ? (
@@ -492,16 +485,6 @@ const BillSplitScreen: React.FC = () => {
               />
             </View>
           )}
-
-          <Button
-            title="Done"
-            onPress={closeAddPersonPopup}
-            disabled={persons.length === 0}
-            styling={{
-              button: styles.doneButton,
-              title: styles.doneButtonText,
-            }}
-          />
         </View>
       </AnimatedPopupCard>
 
@@ -854,18 +837,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-  },
-
-  doneButton: {
-    marginTop: 8,
-    paddingVertical: 8,
-    height: 44,
-    minHeight: 44,
-  },
-
-  doneButtonText: {
-    fontSize: 16,
-    padding: 4,
   },
 
   // New styles for sharing functionality
