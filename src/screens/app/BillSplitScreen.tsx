@@ -254,14 +254,13 @@ const BillSplitScreen: React.FC = () => {
         {persons.length === 0 ? (
           <View style={styles.pleaseMessageContainer}>
             <Text style={styles.pleaseMessageText}>
-              Welcome to Bill Split!{'\n'}
-              Tap the + button above to add people to split with
+              Tap the + button above to add people
             </Text>
           </View>
         ) : billItems.length === 0 ? (
           <View style={styles.pleaseMessageContainer}>
             <Text style={styles.pleaseMessageText}>
-              Great! Now tap the receipt above to scan your bill
+              Tap the receipt above to scan your bill
             </Text>
           </View>
         ) : (
