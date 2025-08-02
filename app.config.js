@@ -17,7 +17,7 @@ export default {
   expo: {
     name: getAppName(),
     slug: "Home-App-Assistant",
-    version: "0.4.0",
+    version: "0.4.1",
     orientation: "portrait",
     icon: "./assets/images/app-icon.png",
     userInterfaceStyle: "light",
@@ -29,6 +29,10 @@ export default {
     },
     ios: {
       supportsTablet: true,
+      infoPlist: {
+        UIViewControllerBasedStatusBarAppearance: false,
+        UIStatusBarStyle: "UIStatusBarStyleDarkContent"
+      }
     },
     android: {
       adaptiveIcon: {
@@ -37,6 +41,11 @@ export default {
       },
       googleServicesFile:  process.env.GOOGLE_SERVICES_JSON ?? "./firebase/google-services.json",
       package: "com.homeAssistant",
+      statusBar: {
+        barStyle: "dark-content",
+        backgroundColor: "transparent",
+        translucent: true
+      }
     },
     web: {
       favicon: "./assets/favicon.png",
