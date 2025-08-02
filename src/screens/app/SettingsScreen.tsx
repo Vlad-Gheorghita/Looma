@@ -4,6 +4,7 @@ import React from "react";
 import { View, StyleSheet, Text, ScrollView, Pressable } from "react-native";
 import { useAuth } from "state/AuthContext";
 import SettingsIcon from "@icons/settings-icon.svg";
+import Constants from 'expo-constants';
 
 const SettingsScreen: React.FC = () => {
   const { logout } = useAuth();
@@ -67,22 +68,22 @@ const SettingsScreen: React.FC = () => {
           {settingsOptions.map((option) => (
             <Pressable
               key={option.id}
-              style={({ pressed }) => [
+              style={[
                 styles.optionItem,
-                pressed && styles.optionItemPressed
+                styles.optionItemDisabled
               ]}
-              onPress={option.onPress}
+              disabled={true}
             >
               <View style={styles.optionContent}>
-                <View style={styles.optionIcon}>
-                  <Text style={styles.optionIconText}>{option.icon}</Text>
+                <View style={[styles.optionIcon, styles.optionIconDisabled]}>
+                  <Text style={[styles.optionIconText, styles.optionIconTextDisabled]}>{option.icon}</Text>
                 </View>
                 <View style={styles.optionTextContainer}>
-                  <Text style={styles.optionTitle}>{option.title}</Text>
-                  <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
+                  <Text style={[styles.optionTitle, styles.optionTitleDisabled]}>{option.title}</Text>
+                  <Text style={[styles.optionSubtitle, styles.optionSubtitleDisabled]}>{option.subtitle}</Text>
                 </View>
                 <View style={styles.optionArrow}>
-                  <Text style={styles.optionArrowText}>›</Text>
+                  <Text style={[styles.optionArrowText, styles.optionArrowTextDisabled]}>›</Text>
                 </View>
               </View>
             </Pressable>
@@ -103,7 +104,7 @@ const SettingsScreen: React.FC = () => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Looma v1.0.0</Text>
+          <Text style={styles.footerText}>Looma v{Constants.expoConfig?.version || '1.0.0'}</Text>
           <Text style={styles.footerText}>Made with ❤️</Text>
         </View>
       </ScrollView>
@@ -188,6 +189,10 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   
+  optionItemDisabled: {
+    opacity: 0.5,
+  },
+  
   optionContent: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -208,6 +213,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   
+  optionIconDisabled: {
+    backgroundColor: '#f9fafb',
+  },
+  
+  optionIconTextDisabled: {
+    opacity: 0.6,
+  },
+  
   optionTextContainer: {
     flex: 1,
   },
@@ -219,10 +232,18 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   
+  optionTitleDisabled: {
+    color: '#9ca3af',
+  },
+  
   optionSubtitle: {
     fontSize: 14,
     color: '#6b7280',
     lineHeight: 20,
+  },
+  
+  optionSubtitleDisabled: {
+    color: '#d1d5db',
   },
   
   optionArrow: {
@@ -236,6 +257,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#9ca3af',
     fontWeight: '300',
+  },
+  
+  optionArrowTextDisabled: {
+    color: '#e5e7eb',
   },
   
   // Logout Section

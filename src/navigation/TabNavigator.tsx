@@ -8,7 +8,18 @@ import SettingsIcon from "@icons/settings-icon.svg";
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
 const TabNavigator = () => (
-  <Tab.Navigator>
+  <Tab.Navigator
+    screenOptions={{
+      headerStyle: {
+        backgroundColor: '#ffffff',
+      },
+      headerTintColor: '#000000',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        color: '#000000',
+      },
+    }}
+  >
     <Tab.Screen
       name="BillSplit"
       component={BillSplitScreen}
